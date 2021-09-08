@@ -12,7 +12,7 @@ class DetectionTask(private val starship: Starship): BukkitRunnable() {
 	)
 
 	override fun run() {
-		starship.player.sendMessage("Detecting Starship, this can take a few seconds.")
+		starship.player.sendMessage("&l[!] &r&cDetecting Starship. &l&f[!] \n&4>>>  &7This can take a few seconds.. &4>>>")
 
 		starship.detectedBlocks.clear()
 
@@ -25,7 +25,7 @@ class DetectionTask(private val starship: Starship): BukkitRunnable() {
 
 		while (blocksToCheck.isNotEmpty()) {
 			if (starship.detectedBlocks.size == 1000000) {
-				starship.player.sendMessage("Reached arbitrary detection limit. (1,000,000)")
+				starship.player.sendMessage("&l[!] &r&cReached arbitrary detection limit. &4&l(1,000,000) &f[!]")
 				break
 			}
 
