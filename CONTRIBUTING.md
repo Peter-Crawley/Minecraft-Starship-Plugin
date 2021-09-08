@@ -1,4 +1,4 @@
-# **Contributing To *Minecraft Starship Plugin***
+# **Contributing To *Minecraft-Starship-Plugin***
 
 # Pull Requests
 1. The owner of this repository considers spaces for indentations the act of a person who is 'pure evil', so please use the TAB key instead.
