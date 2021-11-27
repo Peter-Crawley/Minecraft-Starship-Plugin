@@ -22,7 +22,7 @@ abstract class Screen : Listener {
 	lateinit var screen: Inventory
 		private set
 
-	// The slots the player can place/remove items in
+	// The slots in which the player can place/remove items
 	val playerEditableSlots = mutableSetOf<Int>()
 
 	private fun createScreen(player: Player, inventory: Inventory) {
@@ -78,7 +78,7 @@ abstract class Screen : Listener {
 	}
 
 	@EventHandler
-	fun onPlayerMoveItemToInventoryEvent(event: InventoryDragEvent) {
+	fun onPlayerDragItemEvent(event: InventoryDragEvent) {
 		if (event.inventory == screen) event.isCancelled = true;
 	}
 
