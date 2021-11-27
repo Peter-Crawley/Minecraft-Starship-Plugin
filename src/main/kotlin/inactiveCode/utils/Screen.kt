@@ -3,6 +3,7 @@ package io.github.petercrawley.minecraftstarshipplugin.utils
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.plugin
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -58,6 +59,12 @@ abstract class Screen : Listener {
 		screen.close()
 
 		onScreenClosed()
+	}
+
+	fun setAll(slots: MutableSet<Int>, item: ItemStack){
+		slots.forEach{
+			screen.setItem(it, item)
+		}
 	}
 
 	@EventHandler
