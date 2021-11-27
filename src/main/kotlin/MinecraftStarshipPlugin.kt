@@ -4,6 +4,8 @@ import io.github.petercrawley.minecraftstarshipplugin.commands.CommandTabComplet
 import io.github.petercrawley.minecraftstarshipplugin.commands.Commands
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.CustomBlocksListener
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.MSPMaterial
+import io.github.petercrawley.minecraftstarshipplugin.powerarmor.ModuleScreenListener
+import io.github.petercrawley.minecraftstarshipplugin.powerarmor.PowerArmorManager
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.plugin.java.JavaPlugin
@@ -38,9 +40,12 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 		reloadConfig()
 
 		getPluginManager().registerEvents(CustomBlocksListener(), this)
+		getPluginManager().registerEvents(ModuleScreenListener(), this)
 
 		plugin.getCommand("msp")!!.setExecutor(Commands())
 		plugin.getCommand("msp")!!.tabCompleter = CommandTabComplete()
+
+		PowerArmorManager()
 	}
 
 	override fun reloadConfig() {
