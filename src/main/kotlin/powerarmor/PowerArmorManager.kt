@@ -21,7 +21,10 @@ class PowerArmorManager: Listener {
 	companion object{
 		fun isPowerArmor(armor: ItemStack?): Boolean{
 			if (armor == null) return false;
-			return armor.itemMeta.persistentDataContainer.get(NamespacedKey(plugin,"is-power-armor"), PersistentDataType.INTEGER) != null
+			return armor.itemMeta.persistentDataContainer.get(
+				NamespacedKey(plugin,"power-module-namne"),
+				PersistentDataType.STRING
+			) != null
 		}
 
 		fun isWearingPowerArmor(player: Player): Boolean{
@@ -33,16 +36,37 @@ class PowerArmorManager: Listener {
 
 		fun saveModules(player: Player, modules: MutableSet<PowerArmorModule>){
 			// Save the player's current modules to their PersistentDataContainer
-			TODO()
+			var moduleCSV = "" // Comma separated values of all of the module names
+
+			modules.forEach {
+				moduleCSV += it.name + ","
+			}
+			player.persistentDataContainer.set(
+				NamespacedKey(plugin, "equipped-power-armor-modules"),
+				PersistentDataType.STRING,
+				moduleCSV
+			)
 		}
+
 
 		fun getModules(player: Player): MutableSet<PowerArmorModule>{
 			// Get the player's current modules from their PersistentDataContainer
-			TODO()
+			val moduleCSV = player.persistentDataContainer.get(NamespacedKey(plugin, "equipped-power-armor-modules"), PersistentDataType.STRING)
+				?: return mutableSetOf<PowerArmorModule>()
+			val moduleNames = moduleCSV.split(",")
+			val modules = mutableSetOf<PowerArmorModule>()
+			moduleNames.forEach {
+				modules.add(getModuleFromName(it))
+			}
+			return modules
 		}
 
-		fun getModuleFromItem(item: ItemStack): PowerArmorModule{
-			// Somehow need to iterate through the modules, and find the matching one
+		fun getModuleFromItemStack(item: ItemStack): PowerArmorModule {
+			return getModuleFromName(item.itemMeta.persistentDataContainer.get(NamespacedKey(plugin, "power-module-name"), PersistentDataType.STRING))
+
+		}
+
+		fun getModuleFromName(name: String?): PowerArmorModule {
 			TODO()
 		}
 	}

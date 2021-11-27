@@ -12,9 +12,11 @@ import org.bukkit.persistence.PersistentDataType
 
 abstract class PowerArmorModule {
 	var item = ItemStack(Material.FLINT)
+	lateinit var name: String
 	abstract val weight: Int;
 
 	fun createItem(name: String, lore: String, recipe: ShapedRecipe) {
+		this.name = name
 		val meta = item.itemMeta
 		val itemLore: MutableList<Component> = ArrayList()
 		itemLore.add(Component.text(lore, NamedTextColor.DARK_GREEN))
@@ -23,12 +25,9 @@ abstract class PowerArmorModule {
 		meta.displayName(Component.text(name, NamedTextColor.GOLD))
 
 		meta.persistentDataContainer.set(
-			NamespacedKey(MinecraftStarshipPlugin.plugin,"is-power-module"),
-			PersistentDataType.INTEGER, 1
-		)
-		meta.persistentDataContainer.set(
-			NamespacedKey(MinecraftStarshipPlugin.plugin,"power-module-${name.replace(" ", "-")}"),
-			PersistentDataType.INTEGER, 1
+			NamespacedKey(MinecraftStarshipPlugin.plugin,"power-module-name"),
+			PersistentDataType.STRING,
+			name
 		)
 
 		item.itemMeta = meta
