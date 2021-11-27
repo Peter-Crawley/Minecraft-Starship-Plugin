@@ -8,8 +8,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
 
 abstract class Screen : Listener {
 	lateinit var player: Player
@@ -38,11 +40,14 @@ abstract class Screen : Listener {
 
 	open fun onScreenButtonClicked(slot: Int) {}
 
+	open fun onPlayerPlaceItem(slot: Int, items: ItemStack) {}
+
 	open fun onScreenClosed() {}
 
 	fun closeScreen() {
 		// Unregister handlers first, otherwise we will create a loop when we call screen.close()
 		InventoryCloseEvent.getHandlerList().unregister(this)
+		InventoryDragEvent.getHandlerList().unregister(this)
 		InventoryClickEvent.getHandlerList().unregister(this)
 
 		screen.close()
@@ -52,11 +57,23 @@ abstract class Screen : Listener {
 
 	@EventHandler
 	fun onInventoryClickEvent(event: InventoryClickEvent) {
-		if (event.inventory == screen) {
+		if (event.inventory != screen) return
+		event.isCancelled = true
+		onScreenButtonClicked(event.rawSlot)
+		onScreenUpdate()
+	}
+
+	@EventHandler
+	fun onPlayerMoveItemToInventoryEvent(event: InventoryDragEvent) {
+		if (event.inventory != screen) return;
+		// It doesn't look like Paper will tell us which slot had what added to it, so we just cancel
+		// anything that involves more than one slot.
+		if (event.inventorySlots.size > 1) {
 			event.isCancelled = true
-			onScreenButtonClicked(event.rawSlot)
-			onScreenUpdate()
+			return
 		}
+		onPlayerPlaceItem(event.inventorySlots.first(), event.newItems[0]!!)
+		onScreenUpdate()
 	}
 
 	@EventHandler
