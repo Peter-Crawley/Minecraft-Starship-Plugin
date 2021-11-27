@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemStack
 
 class ModuleScreen(player: Player) : Screen() {
-	private val red  = ItemStack(Material.RED_STAINED_GLASS)
+	private val red = ItemStack(Material.RED_STAINED_GLASS)
 	private val green = ItemStack(Material.LIME_STAINED_GLASS)
 
 	private val maxWeight = 5 // TODO: load from config
@@ -16,12 +16,13 @@ class ModuleScreen(player: Player) : Screen() {
 
 	init {
 		createScreen(player, InventoryType.CHEST, "Power Armor Modules")
-		playerEditableSlots.addAll(mutableSetOf(0,1,2,3,9,10,11,12,18,19,20,21,26))
+		playerEditableSlots.addAll(mutableSetOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 26))
 
-		setAll(mutableSetOf(5,6,7,8,14,15,16,17,23,24,25), ItemStack(Material.GRAY_STAINED_GLASS_PANE))
+		setAll(mutableSetOf(5, 6, 7, 8, 14, 15, 16, 17, 23, 24, 25), ItemStack(Material.GRAY_STAINED_GLASS_PANE))
 
 
 	}
+
 	private fun getCurrentWeight(): Int {
 		// Get the combined weight of all of the player's modules
 		var weight = 0
@@ -32,13 +33,12 @@ class ModuleScreen(player: Player) : Screen() {
 	}
 
 
-	fun updateStatusBar(){
+	fun updateStatusBar() {
 		// Update the colored status bar in the middle, that tells the weight status
 		if (getCurrentWeight() <= maxWeight) {
-			setAll(mutableSetOf(4,13,22), green)
-		}
-		else {
-			setAll(mutableSetOf(4,13,22), red)
+			setAll(mutableSetOf(4, 13, 22), green)
+		} else {
+			setAll(mutableSetOf(4, 13, 22), red)
 		}
 	}
 

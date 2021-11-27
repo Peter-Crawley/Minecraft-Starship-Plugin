@@ -13,7 +13,7 @@ import org.bukkit.persistence.PersistentDataType
 abstract class PowerArmorModule {
 	var item = ItemStack(Material.FLINT)
 	lateinit var name: String
-	abstract val weight: Int;
+	abstract val weight: Int
 
 	fun createItem(name: String, lore: String, recipe: ShapedRecipe) {
 		this.name = name
@@ -25,7 +25,7 @@ abstract class PowerArmorModule {
 		meta.displayName(Component.text(name, NamedTextColor.GOLD))
 
 		meta.persistentDataContainer.set(
-			NamespacedKey(MinecraftStarshipPlugin.plugin,"power-module-name"),
+			NamespacedKey(MinecraftStarshipPlugin.plugin, "power-module-name"),
 			PersistentDataType.STRING,
 			name
 		)
@@ -34,6 +34,7 @@ abstract class PowerArmorModule {
 		Bukkit.addRecipe(recipe)
 
 	}
+
 	open fun enableModule() {}
 	open fun disableModule() {}
 
