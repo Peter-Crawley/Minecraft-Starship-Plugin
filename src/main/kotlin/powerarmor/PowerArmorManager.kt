@@ -15,13 +15,11 @@ import org.bukkit.persistence.PersistentDataType
 class PowerArmorManager {
 
 	companion object{
-		@JvmStatic // just in case
 		fun isPowerArmor(armor: ItemStack?): Boolean{
 			if (armor == null) return false;
 			return armor.itemMeta.persistentDataContainer.get(NamespacedKey(plugin,"is-power-armor"), PersistentDataType.INTEGER) != null
 		}
-
-		@JvmStatic
+		
 		fun isWearingPowerArmor(player: Player): Boolean{
 			return isPowerArmor(player.inventory.helmet) &&
 					isPowerArmor(player.inventory.chestplate) &&
