@@ -12,6 +12,7 @@ import org.bukkit.persistence.PersistentDataType
 
 abstract class PowerArmorModule {
 	var item = ItemStack(Material.FLINT)
+	abstract val weight: Int;
 
 	fun createItem(name: String, lore: String, recipe: ShapedRecipe) {
 		val meta = item.itemMeta
