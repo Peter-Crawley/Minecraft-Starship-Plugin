@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack
 class ModuleScreen(player: Player) : Screen() {
 	private val red = ItemStack(Material.RED_STAINED_GLASS)
 	private val green = ItemStack(Material.LIME_STAINED_GLASS)
-	private val yellow = ItemStack(Material.YELLOW_STAINED_GLASS)
 
 	init {
 		createScreen(player, InventoryType.CHEST, "Power Armor Modules")
@@ -38,11 +37,25 @@ class ModuleScreen(player: Player) : Screen() {
 
 	private fun updateStatus() {
 		// Update the colored status bar in the middle, that tells the weight status
-		if (PowerArmorManager.getCurrentModuleWeight(player) <= PowerArmorManager.maxModuleWeight) {
-			setAll(mutableSetOf(4, 13, 22), green)
-		} else {
-			setAll(mutableSetOf(4, 13, 22), red)
+		// Since we temporarily removed all of their modules, we can't use PowerArmorManager.getCurrentModuleWeight()
+		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
+		var weight = 0
+		slots.forEach {
+			val module = getModuleFromItemStack(screen.getItem(it))
+			if (module != null) weight += module.weight
 		}
+		// Figure out what color to make the status bar
+		val color = ItemStack(if (weight <= PowerArmorManager.maxModuleWeight) {
+			green
+		} else {
+			red
+		})
+		// Name it
+		val colorMeta = color.itemMeta
+		colorMeta.displayName(Component.text("Weight: ${PowerArmorManager.getCurrentModuleWeight(player)} / ${PowerArmorManager.maxModuleWeight}"))
+		color.itemMeta = colorMeta
+		// Set it
+		setAll(mutableSetOf(4, 13, 22), color)
 
 		// Update the power indicator
 		val power = PowerArmorManager.getArmorPower(player)
