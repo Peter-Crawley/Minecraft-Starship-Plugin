@@ -3,7 +3,6 @@ package io.github.petercrawley.minecraftstarshipplugin.utils
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.plugin
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

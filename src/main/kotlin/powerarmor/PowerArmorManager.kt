@@ -1,6 +1,7 @@
 package io.github.petercrawley.minecraftstarshipplugin.powerarmor
 
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.plugin
+import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.JumpModule
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.PowerArmorModule
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.SpeedModule
 import net.kyori.adventure.text.Component
@@ -20,13 +21,21 @@ import org.bukkit.persistence.PersistentDataType
 class PowerArmorManager : Listener {
 
 	companion object {
-		var powerArmorModules = mutableSetOf<PowerArmorModule>(SpeedModule())
+		var powerArmorModules = mutableSetOf<PowerArmorModule>(SpeedModule(), JumpModule())
 
 		fun isPowerArmor(armor: ItemStack?): Boolean {
 			if (armor == null) return false
 			return armor.itemMeta.persistentDataContainer.get(
 				NamespacedKey(plugin, "is-power-armor"),
 				PersistentDataType.INTEGER
+			) != null
+		}
+
+		fun isPowerModule(module: ItemStack?): Boolean {
+			if (module == null) return false
+			return module.itemMeta.persistentDataContainer.get(
+				NamespacedKey(plugin, "power-module-name"),
+				PersistentDataType.STRING
 			) != null
 		}
 
@@ -39,7 +48,7 @@ class PowerArmorManager : Listener {
 
 		fun saveModules(player: Player, modules: MutableSet<PowerArmorModule>) {
 			// Save the player's current modules to their PersistentDataContainer
-			var moduleCSV = "" // Comma separated values of all of the module names
+			var moduleCSV = "" // Comma separated values of all the module names
 
 			modules.forEach {
 				moduleCSV += it.name + ","
@@ -67,7 +76,8 @@ class PowerArmorManager : Listener {
 			return modules
 		}
 
-		fun getModuleFromItemStack(item: ItemStack): PowerArmorModule? {
+		fun getModuleFromItemStack(item: ItemStack?): PowerArmorModule? {
+			if (item == null) return null;
 			return getModuleFromName(
 				item.itemMeta.persistentDataContainer.get(
 					NamespacedKey(

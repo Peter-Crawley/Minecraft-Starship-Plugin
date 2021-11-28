@@ -3,11 +3,10 @@ package io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.persistence.PersistentDataType
 
 
@@ -15,7 +14,6 @@ abstract class PowerArmorModule {
 	var item = ItemStack(Material.FLINT)
 	abstract val name: String
 	abstract val lore: String
-	abstract val recipe: ShapedRecipe
 	abstract val weight: Int
 
 	open fun createItem() {
@@ -33,11 +31,8 @@ abstract class PowerArmorModule {
 		)
 
 		item.itemMeta = meta
-		Bukkit.addRecipe(recipe)
-
 	}
 
-	open fun enableModule() {}
-	open fun disableModule() {}
-
+	open fun enableModule(player: Player) {}
+	open fun disableModule(player: Player) {}
 }

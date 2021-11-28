@@ -7,19 +7,19 @@ import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.potion.PotionEffectType
 
-class SpeedModule : EffectModule() {
-	override val name = "Speed Module"
-	override val lore = "Grants speed when applied"
-	override val effect: PotionEffectType = PotionEffectType.SPEED
+class JumpModule : EffectModule() {
+	override val name = "Jump Module"
+	override val lore = "Grants jump boost when applied"
+	override val effect: PotionEffectType = PotionEffectType.JUMP
 	override val effectMultiplier =1
 	override val weight = 2
 
 	init {
 		createItem()
-		val recipe = ShapedRecipe(NamespacedKey(MinecraftStarshipPlugin.plugin, "power-module-speed"), item)
+		val recipe = ShapedRecipe(NamespacedKey(MinecraftStarshipPlugin.plugin, "power-module-jump"), item)
 		recipe.shape("ooo", "oco", "ooo")
 		recipe.setIngredient('o', Material.GOLD_INGOT)
-		recipe.setIngredient('c', Material.SUGAR)
+		recipe.setIngredient('c', Material.RABBIT_FOOT)
 		Bukkit.addRecipe(recipe)
 	}
 }
