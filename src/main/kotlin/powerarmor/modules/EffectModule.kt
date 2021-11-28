@@ -5,6 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
+import java.util.*
 
 abstract class EffectModule : PowerArmorModule() {
 	// Represents a power armor module that grants a potion effect
@@ -12,18 +13,19 @@ abstract class EffectModule : PowerArmorModule() {
 	abstract val effectMultiplier: Int
 
 	private val period = 5
-
-	private lateinit var task: ApplyPotionEffectTask
+	private val players = mutableMapOf<UUID,ApplyPotionEffectTask>()
 
 	override fun enableModule(player: Player) {
 		super.enableModule(player)
-		task = ApplyPotionEffectTask(player, effect, effectMultiplier, period)
+		val task = ApplyPotionEffectTask(player, effect, effectMultiplier, period)
 		task.runTaskTimer(plugin, 0, period.toLong())
+		players.putIfAbsent(player.uniqueId, task)
 	}
 
 	override fun disableModule(player: Player) {
 		super.disableModule(player)
-		if (this::task.isInitialized) task.cancel()
+		val task = players[player.uniqueId] ?: return
+		task.cancel()
 	}
 }
 
