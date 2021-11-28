@@ -1,6 +1,7 @@
 package io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules
 
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin
+import io.github.petercrawley.minecraftstarshipplugin.powerarmor.PowerArmorManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -31,6 +32,20 @@ abstract class PowerArmorModule {
 		)
 
 		item.itemMeta = meta
+	}
+
+	fun drainPower(player: Player, powerToDrain: Int) {
+		// Drain powerToDrain power from the player, and disable if we run out
+
+		var power = PowerArmorManager.getArmorPower(player)
+		if (power <= 0) {
+			// Out of power, disable the module
+			disableModule(player)
+		}
+		else {
+			power -= powerToDrain
+			PowerArmorManager.setArmorPower(player, power)
+		}
 	}
 
 	open fun enableModule(player: Player) {}
