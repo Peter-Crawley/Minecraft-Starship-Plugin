@@ -6,7 +6,7 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
 
-abstract class EffectModule: PowerArmorModule() {
+abstract class EffectModule : PowerArmorModule() {
 	// Represents a power armor module that grants a potion effect
 	abstract val effect: PotionEffectType
 	abstract val effectMultiplier: Int
@@ -27,7 +27,12 @@ abstract class EffectModule: PowerArmorModule() {
 	}
 }
 
-class ApplyPotionEffectTask(private val player: Player, private val effect: PotionEffectType, private val effectMultiplier: Int, private val period: Int) : BukkitRunnable() {
+class ApplyPotionEffectTask(
+	private val player: Player,
+	private val effect: PotionEffectType,
+	private val effectMultiplier: Int,
+	private val period: Int
+) : BukkitRunnable() {
 	override fun run() {
 		player.addPotionEffect(PotionEffect(effect, period + 1, effectMultiplier, false, false))
 	}

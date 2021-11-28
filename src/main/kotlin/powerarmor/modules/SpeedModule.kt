@@ -11,7 +11,7 @@ class SpeedModule : EffectModule() {
 	override val name = "Speed Module"
 	override val lore = "Grants speed when applied"
 	override val effect: PotionEffectType = PotionEffectType.SPEED
-	override val effectMultiplier =1
+	override val effectMultiplier = 1
 	override val weight = 2
 
 	init {

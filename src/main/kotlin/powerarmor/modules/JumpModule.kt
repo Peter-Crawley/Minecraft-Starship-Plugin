@@ -11,7 +11,7 @@ class JumpModule : EffectModule() {
 	override val name = "Jump Module"
 	override val lore = "Grants jump boost when applied"
 	override val effect: PotionEffectType = PotionEffectType.JUMP
-	override val effectMultiplier =1
+	override val effectMultiplier = 1
 	override val weight = 2
 
 	init {
