@@ -41,8 +41,7 @@ abstract class PowerArmorModule {
 		if (power <= 0) {
 			// Out of power, disable the module
 			disableModule(player)
-		}
-		else {
+		} else {
 			power -= powerToDrain
 			PowerArmorManager.setArmorPower(player, power)
 		}
