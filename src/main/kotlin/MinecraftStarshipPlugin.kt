@@ -13,15 +13,15 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 		lateinit var plugin: MinecraftStarshipPlugin
 			private set
 
+		var customBlocks = mapOf<Byte, String>()
+			private set
+
 //		var timeOperations: Boolean = false
 //			private set
 //
 //		var detectionLimit: Int = 500000
 //			private set
-
-		var customBlocks = mapOf<Byte, String>()
-			private set
-
+//
 //		var forcedUndetectable = setOf<MSPMaterial>()
 //			private set
 //
@@ -46,21 +46,7 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 	override fun reloadConfig() {
 		super.reloadConfig()
 
-//		timeOperations = config.getBoolean("timeOperations", false)
-//		detectionLimit = config.getInt("detectionLimit", 500000)
-//
-//		val newForcedUndetectable = mutableSetOf<MSPMaterial>()
-//		config.getStringList("forcedUndetectable").forEach {
-//			newForcedUndetectable.add(MSPMaterial(it))
-//		}
-//		forcedUndetectable = newForcedUndetectable
-//
-//		val newDefaultUndetectable = mutableSetOf<MSPMaterial>()
-//		config.getStringList("defaultUndetectable").forEach {
-//			newDefaultUndetectable.add(MSPMaterial(it))
-//		}
-//		defaultUndetectable = newDefaultUndetectable
-
+		// Load custom blocks
 		val newCustomBlocks = mutableMapOf<Byte, String>()
 		config.getConfigurationSection("customBlocks")?.getKeys(false)?.forEach {
 			var id = 0
@@ -76,5 +62,36 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 		}
 
 		customBlocks = newCustomBlocks
+
+		config.getConfigurationSection("multiblocks")?.getKeys(false)?.forEach { multiblock ->
+			val keys = mutableMapOf<String, MSPMaterial>()
+
+			for (key in config.getConfigurationSection("multiblocks.$multiblock.key")!!.getKeys(false)) {
+				val materialString = config.getString("multiblocks.$multiblock.key.$key")
+				val material = MSPMaterial(materialString)
+
+				if (keys.containsValue(material)) {
+					logger.severe("Multiblock $multiblock contains duplicate material $materialString")
+					return@forEach
+				}
+
+				keys[key] = material
+			}
+		}
+
+//		timeOperations = config.getBoolean("timeOperations", false)
+//		detectionLimit = config.getInt("detectionLimit", 500000)
+//
+//		val newForcedUndetectable = mutableSetOf<MSPMaterial>()
+//		config.getStringList("forcedUndetectable").forEach {
+//			newForcedUndetectable.add(MSPMaterial(it))
+//		}
+//		forcedUndetectable = newForcedUndetectable
+//
+//		val newDefaultUndetectable = mutableSetOf<MSPMaterial>()
+//		config.getStringList("defaultUndetectable").forEach {
+//			newDefaultUndetectable.add(MSPMaterial(it))
+//		}
+//		defaultUndetectable = newDefaultUndetectable
 	}
 }
