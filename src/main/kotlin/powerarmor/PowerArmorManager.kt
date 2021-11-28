@@ -56,7 +56,7 @@ class PowerArmorManager : Listener {
 					isPowerArmor(player.inventory.boots))
 		}
 
-		fun saveModules(player: Player, modules: MutableSet<PowerArmorModule>) {
+		fun setModules(player: Player, modules: MutableSet<PowerArmorModule>) {
 			// Save the player's current modules to their PersistentDataContainer
 			var moduleCSV = "" // Comma separated values of all the module names
 
@@ -68,6 +68,20 @@ class PowerArmorManager : Listener {
 				PersistentDataType.STRING,
 				moduleCSV
 			)
+		}
+
+		fun addModule(player: Player, module: PowerArmorModule){
+			val modules = getModules(player)
+			modules.add(module)
+			setModules(player, modules)
+		}
+
+		fun removeModule(player: Player, module: PowerArmorModule){
+			val modules = getModules(player)
+			if (modules.remove(module)) {
+				module.disableModule(player)
+				setModules(player, modules)
+			}
 		}
 
 		fun getModules(player: Player): MutableSet<PowerArmorModule> {
@@ -194,6 +208,6 @@ class PowerArmorManager : Listener {
 		getModules(event.entity).forEach {
 			event.entity.world.dropItem(event.entity.location, it.item)
 		}
-		saveModules(event.entity, mutableSetOf<PowerArmorModule>())
+		setModules(event.entity, mutableSetOf<PowerArmorModule>())
 	}
 }

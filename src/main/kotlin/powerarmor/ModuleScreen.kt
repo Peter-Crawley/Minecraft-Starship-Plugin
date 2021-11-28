@@ -28,6 +28,8 @@ class ModuleScreen(player: Player) : Screen() {
 			screen.setItem(slots[index], it.item)
 			index++
 		}
+		// Clear their modules, they get added back on screen close
+		PowerArmorManager.setModules(player, mutableSetOf<PowerArmorModule>())
 	}
 
 	private fun updateStatus() {
@@ -78,12 +80,10 @@ class ModuleScreen(player: Player) : Screen() {
 	override fun onScreenClosed() {
 		// Save every module to the player
 		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
-		val modules = mutableSetOf<PowerArmorModule>()
 		slots.forEach {
 			val module = getModuleFromItemStack(screen.getItem(it))
-			if (module != null) modules.add(module)
+			if (module != null) PowerArmorManager.addModule(player, module)
 		}
-		PowerArmorManager.saveModules(player, modules)
 	}
 
 	override fun onPlayerChangeItem(slot: Int, oldItems: ItemStack?, newItems: ItemStack?) {
