@@ -64,10 +64,14 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 		customBlocks = newCustomBlocks
 
 		config.getConfigurationSection("multiblocks")?.getKeys(false)?.forEach { multiblock ->
+			// The first thing that needs to be done is we need to get all the keys for the multiblock
+			// This way we know what blocks are in the multiblock
 			val keys = mutableMapOf<String, MSPMaterial>()
+			var interfaceKey: Char? = null
 
 			for (key in config.getConfigurationSection("multiblocks.$multiblock.key")!!.getKeys(false)) {
 				val materialString = config.getString("multiblocks.$multiblock.key.$key")
+
 				val material = MSPMaterial(materialString)
 
 				if (keys.containsValue(material)) {
@@ -75,8 +79,48 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 					return@forEach
 				}
 
+				// TODO: Interface should be determined by a config file.
+				if (materialString == "INTERFACE") interfaceKey = key[0]
+
 				keys[key] = material
 			}
+
+			if (interfaceKey == null) {
+				logger.severe("Multiblock $multiblock does not have an interface block")
+				return@forEach
+			}
+
+			// Now we need to find the interface as all blocks in a multtiblock are stored relative to this point.
+			val layers = config.getConfigurationSection("multiblocks.$multiblock.layers")!!.getKeys(false)
+
+			var y: Int? = null
+			var z: Int? = null
+			var x: Int? = null
+
+			layerLoop@for ((iY, layer) in layers.withIndex()) {
+				val layerZList = config.getStringList("multiblocks.$multiblock.layers.$layer")
+
+				var iZ = -1
+				for (zString in layerZList) {
+					iZ++
+
+					var iX = -1
+
+					for (c in zString) {
+						iX++
+
+						if (c == interfaceKey) {
+							y = iY
+							z = iZ
+							x = iX
+
+							break@layerLoop
+						}
+					}
+				}
+			}
+
+			logger.info("Multiblock $multiblock has interface at $x, $y, $z")
 		}
 
 //		timeOperations = config.getBoolean("timeOperations", false)
