@@ -129,6 +129,17 @@ class PowerArmorManager : Listener {
 			}
 			return weight
 		}
+
+		fun setPowerArmorEnabled(player: Player, enabled: Boolean) {
+			player.persistentDataContainer.set(NamespacedKey(plugin, "power-armor-enabled"), PersistentDataType.INTEGER, if (enabled) 1 else 0)
+		}
+
+		fun getPowerArmorEnabled(player: Player): Boolean {
+			return player.persistentDataContainer.get(
+				NamespacedKey(plugin, "power-armor-enabled"),
+				PersistentDataType.INTEGER
+			) == 1
+		}
 	}
 
 	private val chestplate = ItemStack(Material.LEATHER_CHESTPLATE)

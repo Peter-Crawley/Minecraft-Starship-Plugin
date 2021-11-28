@@ -59,6 +59,21 @@ class ModuleScreen(player: Player) : Screen() {
 		updateStatus()
 	}
 
+	override fun onScreenButtonClicked(slot: Int) {
+		when (slot) {
+			8 -> {
+				val enabled = !PowerArmorManager.getPowerArmorEnabled(player)
+				var item = ItemStack(Material.RED_STAINED_GLASS)
+				if (enabled) item = ItemStack(Material.LIME_STAINED_GLASS)
+				val meta = item.itemMeta
+				meta.displayName(Component.text(if (enabled) "Enabled" else "Disabled"))
+				item.itemMeta = meta
+				screen.setItem(8, item)
+				PowerArmorManager.setPowerArmorEnabled(player, enabled)
+			}
+		}
+	}
+
 	override fun onScreenClosed() {
 		// Save every module to the player
 		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
