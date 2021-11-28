@@ -19,8 +19,7 @@ class ModuleScreen(player: Player) : Screen() {
 		playerEditableSlots.addAll(mutableSetOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 26))
 
 		setAll(mutableSetOf(5, 6, 7, 8, 14, 15, 16, 17, 23, 24, 25), ItemStack(Material.GRAY_STAINED_GLASS_PANE))
-
-
+		updateStatusBar()
 	}
 
 	private fun getCurrentWeight(): Int {
@@ -33,7 +32,7 @@ class ModuleScreen(player: Player) : Screen() {
 	}
 
 
-	fun updateStatusBar() {
+	private fun updateStatusBar() {
 		// Update the colored status bar in the middle, that tells the weight status
 		if (getCurrentWeight() <= maxWeight) {
 			setAll(mutableSetOf(4, 13, 22), green)
@@ -53,6 +52,5 @@ class ModuleScreen(player: Player) : Screen() {
 		if (isPowerArmor(newItems) || !isPowerArmor(oldItems)) {
 			// Player added a module
 		}
-
 	}
 }

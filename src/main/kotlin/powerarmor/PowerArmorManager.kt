@@ -2,6 +2,7 @@ package io.github.petercrawley.minecraftstarshipplugin.powerarmor
 
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.plugin
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.PowerArmorModule
+import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.SpeedModule
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -19,11 +20,13 @@ import org.bukkit.persistence.PersistentDataType
 class PowerArmorManager : Listener {
 
 	companion object {
+		var powerArmorModules = mutableSetOf<PowerArmorModule>(SpeedModule())
+
 		fun isPowerArmor(armor: ItemStack?): Boolean {
 			if (armor == null) return false
 			return armor.itemMeta.persistentDataContainer.get(
-				NamespacedKey(plugin, "power-module-name"),
-				PersistentDataType.STRING
+				NamespacedKey(plugin, "is-power-armor"),
+				PersistentDataType.INTEGER
 			) != null
 		}
 
@@ -76,7 +79,12 @@ class PowerArmorManager : Listener {
 		}
 
 		fun getModuleFromName(name: String?): PowerArmorModule? {
-			TODO()
+			powerArmorModules.forEach {
+				if (it.name == name){
+					return it
+				}
+			}
+			return null
 		}
 	}
 

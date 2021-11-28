@@ -7,11 +7,9 @@ import org.bukkit.event.player.PlayerInteractEvent
 class ModuleScreenListener : Listener {
 	@EventHandler
 	fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-		if (event.item != null) {
-			if (PowerArmorManager.isPowerArmor(event.item)) {
-				ModuleScreen(event.player)
-				event.isCancelled = true
-			}
+		if (PowerArmorManager.isPowerArmor(event.item)) {
+			ModuleScreen(event.player)
+			event.isCancelled = true
 		}
 	}
 }
