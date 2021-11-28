@@ -1,7 +1,6 @@
 package io.github.petercrawley.minecraftstarshipplugin.powerarmor
 
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.PowerArmorManager.Companion.getModuleFromItemStack
-import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.PowerArmorModule
 import io.github.petercrawley.minecraftstarshipplugin.utils.Screen
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -18,7 +17,6 @@ class ModuleScreen(player: Player) : Screen() {
 		playerEditableSlots.addAll(mutableSetOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 26))
 
 		setAll(mutableSetOf(5, 6, 7, 14, 15, 16, 17, 23, 24, 25), ItemStack(Material.GRAY_STAINED_GLASS_PANE))
-		updateStatus()
 
 		// Put instances of every module they have in the slots
 		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
@@ -32,7 +30,11 @@ class ModuleScreen(player: Player) : Screen() {
 		updateToggleButton(enabled)
 
 		// Clear their modules, they get added back on screen close
-		PowerArmorManager.setModules(player, mutableSetOf<PowerArmorModule>())
+		// Don't just set it to empty or the modules won't disable
+		PowerArmorManager.getModules(player).forEach {
+			PowerArmorManager.removeModule(player, it)
+		}
+		updateStatus()
 	}
 
 	private fun updateStatus() {
@@ -45,11 +47,13 @@ class ModuleScreen(player: Player) : Screen() {
 			if (module != null) weight += module.weight
 		}
 		// Figure out what color to make the status bar
-		val color = ItemStack(if (weight <= PowerArmorManager.maxModuleWeight) {
-			green
-		} else {
-			red
-		})
+		val color = ItemStack(
+			if (weight <= PowerArmorManager.maxModuleWeight) {
+				green
+			} else {
+				red
+			}
+		)
 		// Name it
 		val colorMeta = color.itemMeta
 		colorMeta.displayName(Component.text("Weight: ${weight} / ${PowerArmorManager.maxModuleWeight}"))

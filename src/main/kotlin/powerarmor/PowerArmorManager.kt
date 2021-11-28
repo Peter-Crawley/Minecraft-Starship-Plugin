@@ -70,13 +70,13 @@ class PowerArmorManager : Listener {
 			)
 		}
 
-		fun addModule(player: Player, module: PowerArmorModule){
+		fun addModule(player: Player, module: PowerArmorModule) {
 			val modules = getModules(player)
 			modules.add(module)
 			setModules(player, modules)
 		}
 
-		fun removeModule(player: Player, module: PowerArmorModule){
+		fun removeModule(player: Player, module: PowerArmorModule) {
 			val modules = getModules(player)
 			if (modules.remove(module)) {
 				module.disableModule(player)
@@ -161,10 +161,10 @@ class PowerArmorManager : Listener {
 		}
 
 		fun getPowerArmorEnabled(player: Player): Boolean {
-			return player.persistentDataContainer.get(
+			return (player.persistentDataContainer.get(
 				NamespacedKey(plugin, "power-armor-enabled"),
 				PersistentDataType.INTEGER
-			) == 1
+			) == 1)
 		}
 	}
 
