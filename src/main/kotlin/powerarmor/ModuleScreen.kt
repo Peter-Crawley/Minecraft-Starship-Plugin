@@ -52,7 +52,7 @@ class ModuleScreen(player: Player) : Screen() {
 		})
 		// Name it
 		val colorMeta = color.itemMeta
-		colorMeta.displayName(Component.text("Weight: ${PowerArmorManager.getCurrentModuleWeight(player)} / ${PowerArmorManager.maxModuleWeight}"))
+		colorMeta.displayName(Component.text("Weight: ${weight} / ${PowerArmorManager.maxModuleWeight}"))
 		color.itemMeta = colorMeta
 		// Set it
 		setAll(mutableSetOf(4, 13, 22), color)
