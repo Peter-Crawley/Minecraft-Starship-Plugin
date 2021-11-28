@@ -2,6 +2,7 @@ package io.github.petercrawley.minecraftstarshipplugin.powerarmor
 
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.plugin
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.JumpModule
+import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.NightVisionModule
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.PowerArmorModule
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.SpeedModule
 import net.kyori.adventure.text.Component
@@ -21,7 +22,7 @@ import org.bukkit.persistence.PersistentDataType
 class PowerArmorManager : Listener {
 
 	companion object {
-		var powerArmorModules = mutableSetOf<PowerArmorModule>(SpeedModule(), JumpModule())
+		var powerArmorModules = mutableSetOf<PowerArmorModule>(SpeedModule(), JumpModule(), NightVisionModule())
 
 		fun isPowerArmor(armor: ItemStack?): Boolean {
 			if (armor == null) return false

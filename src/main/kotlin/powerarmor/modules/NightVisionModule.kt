@@ -7,19 +7,19 @@ import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.potion.PotionEffectType
 
-class SpeedModule : EffectModule() {
-	override val name = "Speed Module"
-	override val lore = "Grants speed when applied"
-	override val effect: PotionEffectType = PotionEffectType.SPEED
+class NightVisionModule : EffectModule() {
+	override val name = "Night Vision Module"
+	override val lore = "Grants night vision boost when applied"
+	override val effect: PotionEffectType = PotionEffectType.NIGHT_VISION
 	override val effectMultiplier = 1
-	override val weight = 3
+	override val weight = 1
 
 	init {
 		createItem()
-		val recipe = ShapedRecipe(NamespacedKey(MinecraftStarshipPlugin.plugin, "power-module-speed"), item)
+		val recipe = ShapedRecipe(NamespacedKey(MinecraftStarshipPlugin.plugin, "power-module-vision"), item)
 		recipe.shape("ooo", "oco", "ooo")
 		recipe.setIngredient('o', Material.GOLD_INGOT)
-		recipe.setIngredient('c', Material.SUGAR)
+		recipe.setIngredient('c', Material.SPIDER_EYE)
 		Bukkit.addRecipe(recipe)
 	}
 }

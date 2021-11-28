@@ -13,7 +13,7 @@ class ModuleScreen(player: Player) : Screen() {
 	private val red = ItemStack(Material.RED_STAINED_GLASS)
 	private val green = ItemStack(Material.LIME_STAINED_GLASS)
 
-	private val maxWeight = 5 // TODO: load from config
+	private val maxWeight = 4 // TODO: load from config
 	// The maximum weight in modules a player can use
 
 	init {
