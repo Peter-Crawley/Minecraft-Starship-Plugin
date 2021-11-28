@@ -23,6 +23,10 @@ class PowerArmorManager : Listener {
 
 	companion object {
 		var powerArmorModules = mutableSetOf<PowerArmorModule>(SpeedModule(), JumpModule(), NightVisionModule())
+		val maxPower = 1000 // The max power a set can store
+
+		// The items that can be placed in the GUI to power the armor
+		val powerItems = mutableMapOf<Material, Int>(Material.COAL to 10)
 
 		fun isPowerArmor(armor: ItemStack?): Boolean {
 			if (armor == null) return false
@@ -41,10 +45,10 @@ class PowerArmorManager : Listener {
 		}
 
 		fun isWearingPowerArmor(player: Player): Boolean {
-			return isPowerArmor(player.inventory.helmet) &&
+			return (isPowerArmor(player.inventory.helmet) &&
 					isPowerArmor(player.inventory.chestplate) &&
 					isPowerArmor(player.inventory.leggings) &&
-					isPowerArmor(player.inventory.boots)
+					isPowerArmor(player.inventory.boots))
 		}
 
 		fun saveModules(player: Player, modules: MutableSet<PowerArmorModule>) {
@@ -104,7 +108,14 @@ class PowerArmorManager : Listener {
 		}
 
 		fun setArmorPower(player: Player, power: Int) {
-			player.persistentDataContainer.set(NamespacedKey(plugin, "power-armor-power"), PersistentDataType.INTEGER, power)
+			var newPower = power
+			if (newPower > maxPower) newPower = maxPower
+			player.persistentDataContainer.set(NamespacedKey(plugin, "power-armor-power"), PersistentDataType.INTEGER, newPower)
+		}
+
+		fun addArmorPower(player: Player, power: Int?) {
+			if (power == null) return
+			setArmorPower(player, getArmorPower(player) + power)
 		}
 	}
 
@@ -136,6 +147,9 @@ class PowerArmorManager : Listener {
 			recipe.setIngredient('c', it.type)
 			Bukkit.addRecipe(recipe)
 		}
+
+		// Check once per second for players wearing power armor
+		ArmorActivatorRunnable().runTaskTimer(plugin, 5, 20)
 	}
 
 	@EventHandler

@@ -12,18 +12,21 @@ abstract class EffectModule : PowerArmorModule() {
 	abstract val effect: PotionEffectType
 	abstract val effectMultiplier: Int
 	open val durationBonus = 1
+	open val powerDrain = 1 // The amount drained every period ticks
 
-	private val period = 5
+	val period = 5 // How often the potion effect is re-applied
 	private val players = mutableMapOf<UUID,ApplyPotionEffectTask>()
 
 	override fun enableModule(player: Player) {
+		if (players.containsKey(player.uniqueId)) return // already activated
 		super.enableModule(player)
-		val task = ApplyPotionEffectTask(player, effect, effectMultiplier, period, durationBonus)
+		val task = ApplyPotionEffectTask(player, this)
 		task.runTaskTimer(plugin, 0, period.toLong())
 		players.putIfAbsent(player.uniqueId, task)
 	}
 
 	override fun disableModule(player: Player) {
+		if (!players.containsKey(player.uniqueId)) return // already deactivated
 		super.disableModule(player)
 		val task = players[player.uniqueId] ?: return
 		task.cancel()
@@ -32,12 +35,11 @@ abstract class EffectModule : PowerArmorModule() {
 
 class ApplyPotionEffectTask(
 	private val player: Player,
-	private val effect: PotionEffectType,
-	private val effectMultiplier: Int,
-	private val durationBonus: Int,
-	private val period: Int
+	private val module: EffectModule
+
 ) : BukkitRunnable() {
 	override fun run() {
-		player.addPotionEffect(PotionEffect(effect, period + durationBonus, effectMultiplier, false, false))
+		module.drainPower(player, module.powerDrain)
+		player.addPotionEffect(PotionEffect(module.effect, module.period + module.durationBonus, module.effectMultiplier, false, false))
 	}
 }

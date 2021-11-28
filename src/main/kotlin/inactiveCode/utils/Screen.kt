@@ -79,8 +79,8 @@ abstract class Screen : Listener {
 			// Not a player-editable slot, it's probably a button
 			event.isCancelled = true
 			onScreenButtonClicked(event.rawSlot)
+			onScreenUpdate()
 		}
-		onScreenUpdate()
 	}
 
 	@EventHandler
@@ -100,5 +100,6 @@ class PlayerMoveItemTask(private val slot: Int, private val screen: Screen, priv
 	// cursor contents before, but this is easier.
 	override fun run() {
 		screen.onPlayerChangeItem(slot, oldItems, screen.screen.getItem(slot))
+		screen.onScreenUpdate()
 	}
 }
