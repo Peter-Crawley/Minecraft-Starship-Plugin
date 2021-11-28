@@ -12,6 +12,7 @@ class NightVisionModule : EffectModule() {
 	override val lore = "Grants night vision boost when applied"
 	override val effect: PotionEffectType = PotionEffectType.NIGHT_VISION
 	override val effectMultiplier = 1
+	override val durationBonus = 100 // Don't want night vision to flicker.
 	override val weight = 1
 
 	init {

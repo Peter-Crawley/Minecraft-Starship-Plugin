@@ -11,13 +11,14 @@ abstract class EffectModule : PowerArmorModule() {
 	// Represents a power armor module that grants a potion effect
 	abstract val effect: PotionEffectType
 	abstract val effectMultiplier: Int
+	open val durationBonus = 1
 
 	private val period = 5
 	private val players = mutableMapOf<UUID,ApplyPotionEffectTask>()
 
 	override fun enableModule(player: Player) {
 		super.enableModule(player)
-		val task = ApplyPotionEffectTask(player, effect, effectMultiplier, period)
+		val task = ApplyPotionEffectTask(player, effect, effectMultiplier, period, durationBonus)
 		task.runTaskTimer(plugin, 0, period.toLong())
 		players.putIfAbsent(player.uniqueId, task)
 	}
@@ -33,9 +34,10 @@ class ApplyPotionEffectTask(
 	private val player: Player,
 	private val effect: PotionEffectType,
 	private val effectMultiplier: Int,
+	private val durationBonus: Int,
 	private val period: Int
 ) : BukkitRunnable() {
 	override fun run() {
-		player.addPotionEffect(PotionEffect(effect, period + 1, effectMultiplier, false, false))
+		player.addPotionEffect(PotionEffect(effect, period + durationBonus, effectMultiplier, false, false))
 	}
 }
