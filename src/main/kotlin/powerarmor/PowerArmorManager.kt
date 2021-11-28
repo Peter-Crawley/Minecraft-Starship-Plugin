@@ -20,6 +20,8 @@ import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.persistence.PersistentDataType
 
 class PowerArmorManager : Listener {
+	// Utility functions for dealing with power armor
+	// + create power armor iteself
 
 	companion object {
 		var powerArmorModules = mutableSetOf<PowerArmorModule>(SpeedModule(), JumpModule(), NightVisionModule())
@@ -156,9 +158,9 @@ class PowerArmorManager : Listener {
 	fun onPlayerDeath(event: PlayerDeathEvent) {
 		// Drop the player's current power armor modules, if keepInventory is off
 		if (event.keepInventory) return
-		getModules(event.player).forEach {
-			event.player.world.dropItem(event.player.location, it.item)
+		getModules(event.entity).forEach {
+			event.entity.world.dropItem(event.entity.location, it.item)
 		}
-		saveModules(event.player, mutableSetOf<PowerArmorModule>())
+		saveModules(event.entity, mutableSetOf<PowerArmorModule>())
 	}
 }
