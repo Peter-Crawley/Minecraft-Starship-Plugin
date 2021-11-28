@@ -18,7 +18,7 @@ class ModuleScreen(player: Player) : Screen() {
 		createScreen(player, InventoryType.CHEST, "Power Armor Modules")
 		playerEditableSlots.addAll(mutableSetOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 26))
 
-		setAll(mutableSetOf(5, 6, 7, 8, 14, 15, 16, 17, 23, 24, 25), ItemStack(Material.GRAY_STAINED_GLASS_PANE))
+		setAll(mutableSetOf(5, 6, 7, 14, 15, 16, 17, 23, 24, 25), ItemStack(Material.GRAY_STAINED_GLASS_PANE))
 		updateStatus()
 
 		// Put instances of every module they have in the slots
@@ -28,6 +28,10 @@ class ModuleScreen(player: Player) : Screen() {
 			screen.setItem(slots[index], it.item)
 			index++
 		}
+		// Insert the toggle button
+		val enabled = PowerArmorManager.getPowerArmorEnabled(player)
+		updateToggleButton(enabled)
+
 		// Clear their modules, they get added back on screen close
 		PowerArmorManager.setModules(player, mutableSetOf<PowerArmorModule>())
 	}
@@ -58,6 +62,16 @@ class ModuleScreen(player: Player) : Screen() {
 		screen.setItem(17, item)
 	}
 
+
+	fun updateToggleButton(enabled: Boolean) {
+		var item = ItemStack(Material.RED_STAINED_GLASS)
+		if (enabled) item = ItemStack(Material.LIME_STAINED_GLASS)
+		val meta = item.itemMeta
+		meta.displayName(Component.text(if (enabled) "Enabled" else "Disabled"))
+		item.itemMeta = meta
+		screen.setItem(8, item)
+	}
+
 	override fun onScreenUpdate() {
 		updateStatus()
 	}
@@ -66,12 +80,7 @@ class ModuleScreen(player: Player) : Screen() {
 		when (slot) {
 			8 -> {
 				val enabled = !PowerArmorManager.getPowerArmorEnabled(player)
-				var item = ItemStack(Material.RED_STAINED_GLASS)
-				if (enabled) item = ItemStack(Material.LIME_STAINED_GLASS)
-				val meta = item.itemMeta
-				meta.displayName(Component.text(if (enabled) "Enabled" else "Disabled"))
-				item.itemMeta = meta
-				screen.setItem(8, item)
+				updateToggleButton(enabled)
 				PowerArmorManager.setPowerArmorEnabled(player, enabled)
 			}
 		}
