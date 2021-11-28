@@ -15,9 +15,6 @@ class ModuleScreen(player: Player) : Screen() {
 	private val green = ItemStack(Material.LIME_STAINED_GLASS)
 	private val yellow = ItemStack(Material.YELLOW_STAINED_GLASS)
 
-	private val maxWeight = 4 // TODO: load from config
-	// The maximum weight in modules a player can use
-
 	init {
 		createScreen(player, InventoryType.CHEST, "Power Armor Modules")
 		playerEditableSlots.addAll(mutableSetOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 26))
@@ -34,19 +31,9 @@ class ModuleScreen(player: Player) : Screen() {
 		}
 	}
 
-	private fun getCurrentWeight(): Int {
-		// Get the combined weight of all of the player's modules
-		var weight = 0
-		PowerArmorManager.getModules(player).forEach {
-			weight += it.weight
-		}
-		return weight
-	}
-
-
 	private fun updateStatus() {
 		// Update the colored status bar in the middle, that tells the weight status
-		if (getCurrentWeight() <= maxWeight) {
+		if (PowerArmorManager.getCurrentModuleWeight(player) <= PowerArmorManager.maxModuleWeight) {
 			setAll(mutableSetOf(4, 13, 22), green)
 		} else {
 			setAll(mutableSetOf(4, 13, 22), red)
@@ -54,14 +41,14 @@ class ModuleScreen(player: Player) : Screen() {
 
 		// Update the power indicator
 		val power = PowerArmorManager.getArmorPower(player)
-		val item = if (power >= PowerArmorManager.maxPower) {
-			ItemStack(Material.LIME_STAINED_GLASS)
-		} else if (power <= 0) {
-			ItemStack(Material.RED_STAINED_GLASS)
-		} else {
-			ItemStack(Material.YELLOW_STAINED_GLASS)
-		}
-
+		val item = ItemStack(when {
+			power >= PowerArmorManager.maxPower -> Material.BLUE_STAINED_GLASS
+			power >= (PowerArmorManager.maxPower / 4) * 3 -> Material.GREEN_STAINED_GLASS
+			power >= PowerArmorManager.maxPower / 2 -> Material.LIME_STAINED_GLASS
+			power >= PowerArmorManager.maxPower / 4 -> Material.YELLOW_STAINED_GLASS
+			power > 0 -> Material.ORANGE_STAINED_GLASS
+			else -> Material.RED_STAINED_GLASS
+		})
 		val meta = item.itemMeta
 		meta.displayName(Component.text("Power: $power/${PowerArmorManager.maxPower}"))
 		item.itemMeta = meta
@@ -84,16 +71,6 @@ class ModuleScreen(player: Player) : Screen() {
 	}
 
 	override fun onPlayerChangeItem(slot: Int, oldItems: ItemStack?, newItems: ItemStack?) {
-		if (isPowerModule(oldItems) || !isPowerModule(newItems)) {
-			// Player removed a module
-			getModuleFromItemStack(oldItems)?.disableModule(player)
-
-		}
-		if (isPowerModule(newItems) || !isPowerModule(oldItems)) {
-			// Player added a module
-			getModuleFromItemStack(newItems)?.enableModule(player)
-		}
-
 		if (slot == 26 && newItems != null) {
 			// Player added fuel to the power slot
 			if (PowerArmorManager.powerItems.containsKey(newItems.type)) {

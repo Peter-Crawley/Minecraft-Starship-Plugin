@@ -68,12 +68,17 @@ abstract class Screen : Listener {
 
 	@EventHandler
 	fun onInventoryClickEvent(event: InventoryClickEvent) {
-		if (event.clickedInventory != screen) return
+		if (event.clickedInventory != screen) {
+			// Might as well still update screen
+			onScreenUpdate()
+			return
+		}
 		if (playerEditableSlots.contains(event.rawSlot)) {
 			// Player editable slot
 			// In one server tick (once the item transfer takes place) trigger any actions based on the old slot contents
 			// and the new slot contents. Honestly, we don't care about the player's cursor.
 			PlayerMoveItemTask(event.slot, this, event.currentItem).runTaskLater(plugin, 1)
+			// It calls onScreenUpdate() later
 		}
 		else{
 			// Not a player-editable slot, it's probably a button
@@ -85,7 +90,11 @@ abstract class Screen : Listener {
 
 	@EventHandler
 	fun onPlayerDragItemEvent(event: InventoryDragEvent) {
-		if (event.inventory == screen) event.isCancelled = true;
+		if (event.inventory == screen) {
+			event.isCancelled = true
+			// Might as well update screen
+			onScreenUpdate()
+		};
 	}
 
 	@EventHandler

@@ -25,8 +25,10 @@ class PowerArmorManager : Listener {
 
 	companion object {
 		var powerArmorModules = mutableSetOf<PowerArmorModule>(SpeedModule(), JumpModule(), NightVisionModule())
-		val maxPower = 1000 // The max power a set can store
 
+		// TODO: load these from a config
+		val maxPower = 1000 // The max power a set can store
+		 val maxModuleWeight = 4 // The max module weight before it disables itself
 		// The items that can be placed in the GUI to power the armor
 		val powerItems = mutableMapOf<Material, Int>(Material.COAL to 10)
 
@@ -118,6 +120,14 @@ class PowerArmorManager : Listener {
 		fun addArmorPower(player: Player, power: Int?) {
 			if (power == null) return
 			setArmorPower(player, getArmorPower(player) + power)
+		}
+
+		fun getCurrentModuleWeight(player: Player) : Int {
+			var weight = 0
+			getModules(player).forEach {
+				weight += it.weight
+			}
+			return weight
 		}
 	}
 
