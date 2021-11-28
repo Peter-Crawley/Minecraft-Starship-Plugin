@@ -1,7 +1,6 @@
 package io.github.petercrawley.minecraftstarshipplugin.powerarmor
 
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.PowerArmorManager.Companion.getModuleFromItemStack
-import io.github.petercrawley.minecraftstarshipplugin.powerarmor.PowerArmorManager.Companion.isPowerModule
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.PowerArmorModule
 import io.github.petercrawley.minecraftstarshipplugin.utils.Screen
 import net.kyori.adventure.text.Component
@@ -41,14 +40,16 @@ class ModuleScreen(player: Player) : Screen() {
 
 		// Update the power indicator
 		val power = PowerArmorManager.getArmorPower(player)
-		val item = ItemStack(when {
-			power >= PowerArmorManager.maxPower -> Material.BLUE_STAINED_GLASS
-			power >= (PowerArmorManager.maxPower / 4) * 3 -> Material.GREEN_STAINED_GLASS
-			power >= PowerArmorManager.maxPower / 2 -> Material.LIME_STAINED_GLASS
-			power >= PowerArmorManager.maxPower / 4 -> Material.YELLOW_STAINED_GLASS
-			power > 0 -> Material.ORANGE_STAINED_GLASS
-			else -> Material.RED_STAINED_GLASS
-		})
+		val item = ItemStack(
+			when {
+				power >= PowerArmorManager.maxPower -> Material.BLUE_STAINED_GLASS
+				power >= (PowerArmorManager.maxPower / 4) * 3 -> Material.GREEN_STAINED_GLASS
+				power >= PowerArmorManager.maxPower / 2 -> Material.LIME_STAINED_GLASS
+				power >= PowerArmorManager.maxPower / 4 -> Material.YELLOW_STAINED_GLASS
+				power > 0 -> Material.ORANGE_STAINED_GLASS
+				else -> Material.RED_STAINED_GLASS
+			}
+		)
 		val meta = item.itemMeta
 		meta.displayName(Component.text("Power: $power/${PowerArmorManager.maxPower}"))
 		item.itemMeta = meta

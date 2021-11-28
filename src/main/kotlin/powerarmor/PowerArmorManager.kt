@@ -28,7 +28,8 @@ class PowerArmorManager : Listener {
 
 		// TODO: load these from a config
 		val maxPower = 1000 // The max power a set can store
-		 val maxModuleWeight = 4 // The max module weight before it disables itself
+		val maxModuleWeight = 4 // The max module weight before it disables itself
+
 		// The items that can be placed in the GUI to power the armor
 		val powerItems = mutableMapOf<Material, Int>(Material.COAL to 10)
 
@@ -107,14 +108,21 @@ class PowerArmorManager : Listener {
 		}
 
 		fun getArmorPower(player: Player): Int {
-			return player.persistentDataContainer.get(NamespacedKey(plugin, "power-armor-power"), PersistentDataType.INTEGER)
-					?: return 0
+			return player.persistentDataContainer.get(
+				NamespacedKey(plugin, "power-armor-power"),
+				PersistentDataType.INTEGER
+			)
+				?: return 0
 		}
 
 		fun setArmorPower(player: Player, power: Int) {
 			var newPower = power
 			if (newPower > maxPower) newPower = maxPower
-			player.persistentDataContainer.set(NamespacedKey(plugin, "power-armor-power"), PersistentDataType.INTEGER, newPower)
+			player.persistentDataContainer.set(
+				NamespacedKey(plugin, "power-armor-power"),
+				PersistentDataType.INTEGER,
+				newPower
+			)
 		}
 
 		fun addArmorPower(player: Player, power: Int?) {
@@ -122,7 +130,7 @@ class PowerArmorManager : Listener {
 			setArmorPower(player, getArmorPower(player) + power)
 		}
 
-		fun getCurrentModuleWeight(player: Player) : Int {
+		fun getCurrentModuleWeight(player: Player): Int {
 			var weight = 0
 			getModules(player).forEach {
 				weight += it.weight
@@ -131,7 +139,11 @@ class PowerArmorManager : Listener {
 		}
 
 		fun setPowerArmorEnabled(player: Player, enabled: Boolean) {
-			player.persistentDataContainer.set(NamespacedKey(plugin, "power-armor-enabled"), PersistentDataType.INTEGER, if (enabled) 1 else 0)
+			player.persistentDataContainer.set(
+				NamespacedKey(plugin, "power-armor-enabled"),
+				PersistentDataType.INTEGER,
+				if (enabled) 1 else 0
+			)
 		}
 
 		fun getPowerArmorEnabled(player: Player): Boolean {
