@@ -77,7 +77,7 @@ class PowerArmorManager : Listener {
 		}
 
 		fun getModuleFromItemStack(item: ItemStack?): PowerArmorModule? {
-			if (item == null) return null;
+			if (item == null) return null
 			return getModuleFromName(
 				item.itemMeta.persistentDataContainer.get(
 					NamespacedKey(
@@ -90,7 +90,7 @@ class PowerArmorManager : Listener {
 
 		fun getModuleFromName(name: String?): PowerArmorModule? {
 			powerArmorModules.forEach {
-				if (it.name == name){
+				if (it.name == name) {
 					return it
 				}
 			}
