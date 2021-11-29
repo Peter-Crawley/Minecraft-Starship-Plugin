@@ -11,15 +11,12 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
-import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.persistence.PersistentDataType
 
-class PowerArmorManager : Listener {
+class PowerArmorManager {
 	// Utility functions for dealing with power armor
 	// + create power armor iteself
 
@@ -174,8 +171,6 @@ class PowerArmorManager : Listener {
 	private val helmet = ItemStack(Material.LEATHER_HELMET)
 
 	init {
-		plugin.server.pluginManager.registerEvents(this, plugin)
-
 		mutableSetOf(helmet, chestplate, leggings, boots).forEach {
 			val meta = it.itemMeta as LeatherArmorMeta
 			val lore: MutableList<Component> = ArrayList()
@@ -199,15 +194,5 @@ class PowerArmorManager : Listener {
 
 		// Check once per second for players wearing power armor
 		ArmorActivatorRunnable().runTaskTimer(plugin, 5, 20)
-	}
-
-	@EventHandler
-	fun onPlayerDeath(event: PlayerDeathEvent) {
-		// Drop the player's current power armor modules, if keepInventory is off
-		if (event.keepInventory) return
-		getModules(event.entity).forEach {
-			event.entity.world.dropItem(event.entity.location, it.item)
-		}
-		setModules(event.entity, mutableSetOf<PowerArmorModule>())
 	}
 }
