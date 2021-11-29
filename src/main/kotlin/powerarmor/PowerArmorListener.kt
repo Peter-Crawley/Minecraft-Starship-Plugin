@@ -19,9 +19,10 @@ class PowerArmorListener : Listener {
 	fun onPlayerDeath(event: PlayerDeathEvent) {
 		// Drop the player's current power armor modules, if keepInventory is off
 		if (event.keepInventory) return
-		PowerArmorManager.getModules(event.entity).forEach {
+		val playerManager = PlayerArmorManager(event.entity)
+		playerManager.modules.forEach {
 			event.entity.world.dropItem(event.entity.location, it.item)
 		}
-		PowerArmorManager.setModules(event.entity, mutableSetOf<PowerArmorModule>())
+		playerManager.modules = mutableSetOf<PowerArmorModule>()
 	}
 }

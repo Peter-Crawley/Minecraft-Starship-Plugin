@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack
 class ModuleScreen(player: Player) : Screen() {
 	private val red = ItemStack(Material.RED_STAINED_GLASS)
 	private val green = ItemStack(Material.LIME_STAINED_GLASS)
+	private val playerManager = PlayerArmorManager(player)
 
 	init {
 		createScreen(player, InventoryType.CHEST, "Power Armor Modules")
@@ -21,18 +22,17 @@ class ModuleScreen(player: Player) : Screen() {
 		// Put instances of every module they have in the slots
 		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
 		var index = 0
-		PowerArmorManager.getModules(player).forEach {
+		playerManager.modules.forEach {
 			screen.setItem(slots[index], it.item)
 			index++
 		}
 		// Insert the toggle button
-		val enabled = PowerArmorManager.getPowerArmorEnabled(player)
-		updateToggleButton(enabled)
+		updateToggleButton(playerManager.armorEnabled)
 
 		// Clear their modules, they get added back on screen close
 		// Don't just set it to empty or the modules won't disable
-		PowerArmorManager.getModules(player).forEach {
-			PowerArmorManager.removeModule(player, it)
+		playerManager.modules.forEach {
+			playerManager.modules.remove(it)
 		}
 		updateStatus()
 	}
@@ -62,7 +62,7 @@ class ModuleScreen(player: Player) : Screen() {
 		setAll(mutableSetOf(4, 13, 22), color)
 
 		// Update the power indicator
-		val power = PowerArmorManager.getArmorPower(player)
+		val power = playerManager.armorPower
 		val item = ItemStack(
 			when {
 				power >= PowerArmorManager.maxPower -> Material.BLUE_STAINED_GLASS
@@ -96,9 +96,8 @@ class ModuleScreen(player: Player) : Screen() {
 	override fun onScreenButtonClicked(slot: Int) {
 		when (slot) {
 			8 -> {
-				val enabled = !PowerArmorManager.getPowerArmorEnabled(player)
-				updateToggleButton(enabled)
-				PowerArmorManager.setPowerArmorEnabled(player, enabled)
+				playerManager.armorEnabled = !playerManager.armorEnabled
+				updateToggleButton(playerManager.armorEnabled)
 			}
 		}
 	}
@@ -108,7 +107,7 @@ class ModuleScreen(player: Player) : Screen() {
 		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
 		slots.forEach {
 			val module = getModuleFromItemStack(screen.getItem(it))
-			if (module != null) PowerArmorManager.addModule(player, module)
+			if (module != null) playerManager.modules.add(module)
 		}
 	}
 
@@ -117,9 +116,9 @@ class ModuleScreen(player: Player) : Screen() {
 			// Player added fuel to the power slot
 			if (PowerArmorManager.powerItems.containsKey(newItems.type)) {
 				for (i in 0..newItems.amount) {
-					val currentPower = PowerArmorManager.getArmorPower(player)
+					val currentPower = playerManager.armorPower
 					if (currentPower < PowerArmorManager.maxPower) {
-						PowerArmorManager.addArmorPower(player, PowerArmorManager.powerItems[newItems.type])
+						playerManager.armorPower += PowerArmorManager.powerItems[newItems.type]!!
 						newItems.amount--
 					}
 				}

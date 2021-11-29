@@ -10,7 +10,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.meta.LeatherArmorMeta
@@ -46,57 +45,6 @@ class PowerArmorManager {
 			) != null
 		}
 
-		fun isWearingPowerArmor(player: Player): Boolean {
-			return (isPowerArmor(player.inventory.helmet) &&
-					isPowerArmor(player.inventory.chestplate) &&
-					isPowerArmor(player.inventory.leggings) &&
-					isPowerArmor(player.inventory.boots))
-		}
-
-		fun setModules(player: Player, modules: MutableSet<PowerArmorModule>) {
-			// Save the player's current modules to their PersistentDataContainer
-			var moduleCSV = "" // Comma separated values of all the module names
-
-			modules.forEach {
-				moduleCSV += it.name + ","
-			}
-			player.persistentDataContainer.set(
-				NamespacedKey(plugin, "equipped-power-armor-modules"),
-				PersistentDataType.STRING,
-				moduleCSV
-			)
-		}
-
-		fun addModule(player: Player, module: PowerArmorModule) {
-			val modules = getModules(player)
-			modules.add(module)
-			setModules(player, modules)
-		}
-
-		fun removeModule(player: Player, module: PowerArmorModule) {
-			val modules = getModules(player)
-			if (modules.remove(module)) {
-				module.disableModule(player)
-				setModules(player, modules)
-			}
-		}
-
-		fun getModules(player: Player): MutableSet<PowerArmorModule> {
-			// Get the player's current modules from their PersistentDataContainer
-			val moduleCSV = player.persistentDataContainer.get(
-				NamespacedKey(plugin, "equipped-power-armor-modules"),
-				PersistentDataType.STRING
-			)
-				?: return mutableSetOf<PowerArmorModule>()
-			val moduleNames = moduleCSV.split(",")
-			val modules = mutableSetOf<PowerArmorModule>()
-			moduleNames.forEach {
-				val module = getModuleFromName(it)
-				if (module != null) modules.add(module)
-			}
-			return modules
-		}
-
 		fun getModuleFromItemStack(item: ItemStack?): PowerArmorModule? {
 			if (item == null) return null
 			return getModuleFromName(
@@ -116,52 +64,6 @@ class PowerArmorManager {
 				}
 			}
 			return null
-		}
-
-		fun getArmorPower(player: Player): Int {
-			return player.persistentDataContainer.get(
-				NamespacedKey(plugin, "power-armor-power"),
-				PersistentDataType.INTEGER
-			)
-				?: return 0
-		}
-
-		fun setArmorPower(player: Player, power: Int) {
-			var newPower = power
-			if (newPower > maxPower) newPower = maxPower
-			player.persistentDataContainer.set(
-				NamespacedKey(plugin, "power-armor-power"),
-				PersistentDataType.INTEGER,
-				newPower
-			)
-		}
-
-		fun addArmorPower(player: Player, power: Int?) {
-			if (power == null) return
-			setArmorPower(player, getArmorPower(player) + power)
-		}
-
-		fun getCurrentModuleWeight(player: Player): Int {
-			var weight = 0
-			getModules(player).forEach {
-				weight += it.weight
-			}
-			return weight
-		}
-
-		fun setPowerArmorEnabled(player: Player, enabled: Boolean) {
-			player.persistentDataContainer.set(
-				NamespacedKey(plugin, "power-armor-enabled"),
-				PersistentDataType.INTEGER,
-				if (enabled) 1 else 0
-			)
-		}
-
-		fun getPowerArmorEnabled(player: Player): Boolean {
-			return (player.persistentDataContainer.get(
-				NamespacedKey(plugin, "power-armor-enabled"),
-				PersistentDataType.INTEGER
-			) == 1)
 		}
 	}
 
