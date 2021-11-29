@@ -30,6 +30,7 @@ abstract class EffectModule : PowerArmorModule() {
 		super.disableModule(player)
 		val task = players[player.uniqueId] ?: return
 		task.cancel()
+		players.remove(player.uniqueId)
 	}
 }
 
