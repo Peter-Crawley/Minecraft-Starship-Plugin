@@ -20,14 +20,13 @@ class PowerArmorManager {
 	// + create power armor iteself
 
 	companion object {
-		var powerArmorModules = mutableSetOf<PowerArmorModule>(SpeedModule(), JumpModule(), NightVisionModule())
+		var powerArmorModules = mutableSetOf<PowerArmorModule>(JumpModule(), NightVisionModule(), SpeedModule())
 
-		// TODO: load these from a config
-		val maxPower = 1000 // The max power a set can store
-		val maxModuleWeight = 4 // The max module weight before it disables itself
 
-		// The items that can be placed in the GUI to power the armor
-		val powerItems = mutableMapOf<Material, Int>(Material.COAL to 10)
+		// These are all overwritten by the config on init
+		var maxPower = 1 // The max power a set can store
+		var maxModuleWeight = 1
+		var powerItems = mutableMapOf<Material, Int>() // The items that can be placed in the GUI to power the armor
 
 		fun isPowerArmor(armor: ItemStack?): Boolean {
 			if (armor == null) return false
@@ -73,6 +72,16 @@ class PowerArmorManager {
 	private val helmet = ItemStack(Material.LEATHER_HELMET)
 
 	init {
+		// Get some values from the config
+		// TODO: Error handling for missing/bad config values
+		maxModuleWeight = plugin.config.getInt("powerArmor.maxModuleWeight")
+		maxPower = plugin.config.getInt("powerArmor.maxPower")
+		plugin.config.getConfigurationSection("powerArmor.powerItems")!!.getKeys(false).forEach{
+			powerItems.putIfAbsent(Material.getMaterial(it)!!, plugin.config.getInt("powerArmor.powerItems.$it"))
+		}
+
+
+
 		mutableSetOf(helmet, chestplate, leggings, boots).forEach {
 			val meta = it.itemMeta as LeatherArmorMeta
 			val lore: MutableList<Component> = ArrayList()
@@ -87,14 +96,26 @@ class PowerArmorManager {
 			meta.persistentDataContainer.set(NamespacedKey(plugin, "is-power-armor"), PersistentDataType.INTEGER, 1)
 			it.itemMeta = meta
 
+			// Get the recipe from the config
+			// Maybe we can avoid doing this for every single armor piece?
 			val recipe = ShapedRecipe(NamespacedKey(plugin, "power-$type"), it)
-			recipe.shape("ooo", "oco", "ooo") // Might want to get the recipe from a config?
-			recipe.setIngredient('o', Material.IRON_INGOT) // Temporary Recipe
-			recipe.setIngredient('c', it.type)
+			recipe.shape(
+				*plugin.config.getStringList("powerArmor.recipe.layout").toTypedArray()
+			)
+			for (craftItemKey in plugin.config.getConfigurationSection(
+				"powerArmor.recipe.items")!!.getKeys(false)) {
+				// For each key, add key, item to the recipe
+				recipe.setIngredient(
+					craftItemKey[0],
+					Material.getMaterial(plugin.config.getString("powerArmor.recipe.items.$craftItemKey")!!)!!
+				)
+			}
+
+			recipe.setIngredient('a', it.type)
 			Bukkit.addRecipe(recipe)
 		}
 
-		// Check once per second for players wearing power armor
-		ArmorActivatorRunnable().runTaskTimer(plugin, 5, 20)
+		// Check once per interval defined in config for players wearing power armor
+		ArmorActivatorRunnable().runTaskTimer(plugin, 5, plugin.config.getLong("powerArmor.updateInterval"))
 	}
 }
