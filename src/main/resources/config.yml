@@ -311,6 +311,9 @@ powerArmor:
   # Modules
   modules:
     "Speed Module": # The module name
+      # The item lore
+      lore: "Grants speed when applied"
+
       # The base material for the item
       material: FLINT
 

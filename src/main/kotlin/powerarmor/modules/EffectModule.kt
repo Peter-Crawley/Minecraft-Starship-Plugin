@@ -7,14 +7,9 @@ import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
-abstract class EffectModule : PowerArmorModule() {
-	// Represents a power armor module that grants a potion effect
-	abstract val effect: PotionEffectType
-	abstract val effectMultiplier: Int
-	open val durationBonus = 1
-	open val powerDrain = 1 // The amount drained every period ticks
+class EffectModule(override val name: String, override val lore: String, override val weight: Int, val effect: PotionEffectType, val effectMultiplier: Int, val durationBonus: Int, val powerDrain: Int, val period: Int) : PowerArmorModule() {
+	// Represents a power armor module that grants a potion effect to the player.
 
-	val period = 5 // How often the potion effect is re-applied
 	private val players = mutableMapOf<UUID, ApplyPotionEffectTask>()
 
 	override fun enableModule(player: Player) {

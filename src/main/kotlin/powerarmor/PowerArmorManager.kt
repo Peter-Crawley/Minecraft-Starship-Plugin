@@ -1,10 +1,8 @@
 package io.github.petercrawley.minecraftstarshipplugin.powerarmor
 
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.plugin
-import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.JumpModule
-import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.NightVisionModule
+import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.EffectModule
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.PowerArmorModule
-import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.SpeedModule
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -14,13 +12,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffectType
 
 class PowerArmorManager {
 	// Utility functions for dealing with power armor
 	// + create power armor iteself
 
 	companion object {
-		var powerArmorModules = mutableSetOf<PowerArmorModule>(JumpModule(), NightVisionModule(), SpeedModule())
+		var powerArmorModules = mutableSetOf<PowerArmorModule>()
 
 
 		// These are all overwritten by the config on init
@@ -113,6 +112,49 @@ class PowerArmorManager {
 
 			recipe.setIngredient('a', it.type)
 			Bukkit.addRecipe(recipe)
+		}
+
+		// Now that we have the actual power armor items created, load the modules from the config
+		plugin.config.getConfigurationSection("powerArmor.modules")!!.getKeys(false).forEach {
+			// First, determine whether its a hardcoded module or an effect module
+			val type = plugin.config.getString("powerArmor.modules.$it.type")!!
+			val newModule: PowerArmorModule
+			when (type) {
+				"EFFECT" -> {
+					// Effect module, load all of the stuff from the "effect" config section
+					// and create a new module
+					newModule = EffectModule(
+						it,
+						plugin.config.getString("powerArmor.modules.$it.lore")!!,
+						plugin.config.getInt("powerArmor.modules.$it.weight"),
+						PotionEffectType.getByName(plugin.config.getString("powerArmor.modules.$it.effect.id")!!)!!,
+						plugin.config.getInt("powerArmor.modules.$it.effect.multiplier"),
+						plugin.config.getInt("powerArmor.modules.$it.effect.durationBonus"),
+						plugin.config.getInt("powerArmor.modules.$it.effect.powerDrain"),
+						plugin.config.getInt("powerArmor.modules.$it.effect.period")
+					)
+				}
+				else -> return@forEach // no specified type, move on.
+			}
+
+			newModule.createItem()
+
+			// Now parse and add its recipe
+			// Maybe in the future create a function for loading recipes from config?
+			val recipe = ShapedRecipe(NamespacedKey(plugin, "power-module-${newModule.name.replace(" ", "-")}"), newModule.item)
+			recipe.shape(
+				*plugin.config.getStringList("powerArmor.modules.$it.recipe.layout").toTypedArray()
+			)
+			for (craftItemKey in plugin.config.getConfigurationSection(
+				"powerArmor.modules.$it.recipe.items")!!.getKeys(false)) {
+				// For each key, add key, item to the recipe
+				recipe.setIngredient(
+					craftItemKey[0],
+					Material.getMaterial(plugin.config.getString("powerArmor.modules.$it.recipe.items.$craftItemKey")!!)!!
+				)
+			}
+			Bukkit.addRecipe(recipe)
+			powerArmorModules.add(newModule)
 		}
 
 		// Check once per interval defined in config for players wearing power armor
