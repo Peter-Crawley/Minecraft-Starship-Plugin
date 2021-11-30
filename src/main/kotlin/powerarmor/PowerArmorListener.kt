@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 class PowerArmorListener : Listener {
 	@EventHandler
 	fun onPlayerInteractEvent(event: PlayerInteractEvent) {
+		// Bring up the power armor menu
 		if (PowerArmorManager.isPowerArmor(event.item)) {
 			ModuleScreen(event.player)
 			event.isCancelled = true

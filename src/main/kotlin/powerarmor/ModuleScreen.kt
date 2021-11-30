@@ -37,7 +37,7 @@ class ModuleScreen(player: Player) : Screen() {
 
 	private fun updateStatus() {
 		// Update the colored status bar in the middle, that tells the weight status
-		// Since we temporarily removed all of their modules, we can't use PowerArmorManager.getCurrentModuleWeight()
+		// Since we temporarily removed all of their modules, we can't use PlayerPowerArmor.moduleWeight
 		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
 		var weight = 0
 		slots.forEach {
@@ -79,6 +79,7 @@ class ModuleScreen(player: Player) : Screen() {
 
 
 	fun updateToggleButton(enabled: Boolean) {
+		// Update the color and name of the toggle button in the top left of the GUI
 		var item = ItemStack(Material.RED_STAINED_GLASS)
 		if (enabled) item = ItemStack(Material.LIME_STAINED_GLASS)
 		val meta = item.itemMeta
@@ -94,6 +95,7 @@ class ModuleScreen(player: Player) : Screen() {
 	override fun onScreenButtonClicked(slot: Int) {
 		when (slot) {
 			8 -> {
+				// Handle clicks on the toggle button
 				playerArmor.armorEnabled = !playerArmor.armorEnabled
 				updateToggleButton(playerArmor.armorEnabled)
 			}
@@ -101,7 +103,7 @@ class ModuleScreen(player: Player) : Screen() {
 	}
 
 	override fun onScreenClosed() {
-		// Save every module to the player
+		// Save every module to the player, and return other items to their inventory
 		val slots = playerEditableSlots
 		slots.forEach {
 			val module = getModuleFromItemStack(screen.getItem(it))
@@ -117,7 +119,7 @@ class ModuleScreen(player: Player) : Screen() {
 
 	override fun onPlayerChangeItem(slot: Int, oldItems: ItemStack?, newItems: ItemStack?) {
 		if (slot == 26 && newItems != null) {
-			// Player added fuel to the power slot
+			// Player added an item (maybe fuel) to the power input slot
 			if (PowerArmorManager.powerItems.containsKey(newItems.type)) {
 				for (i in 0..newItems.amount) {
 					val currentPower = playerArmor.armorPower

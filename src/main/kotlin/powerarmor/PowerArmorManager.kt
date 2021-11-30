@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffectType
 
 class PowerArmorManager {
 	// Utility functions for dealing with power armor
-	// + create power armor iteself
+	// + create power armor itself
 
 	companion object {
 		var powerArmorModules = mutableSetOf<PowerArmorModule>()
@@ -122,7 +122,7 @@ class PowerArmorManager {
 			val newModule: PowerArmorModule
 			when (type) {
 				"EFFECT" -> {
-					// Effect module, load all of the stuff from the "effect" config section
+					// Effect module, load all the stuff from the "effect" config section
 					// and create a new module
 					newModule = EffectModule(
 						ItemStack(Material.getMaterial(plugin.config.getString("powerArmor.modules.$it.item")!!)!!),

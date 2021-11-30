@@ -7,10 +7,11 @@ import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 
 class PlayerPowerArmor(val player: Player) {
-	// Contains all of the player-specific power armor variables.
+	// Contains all the player-specific power armor variables.
 	// Custom getters and setters for saving/loading from PDC.
 
 	val wearingPowerArmor: Boolean
+		// True if the player is wearing a full set of power armor.
 		get() {
 			return (PowerArmorManager.isPowerArmor(player.inventory.helmet) &&
 					PowerArmorManager.isPowerArmor(player.inventory.chestplate) &&
@@ -20,6 +21,7 @@ class PlayerPowerArmor(val player: Player) {
 		}
 
 	var modules = mutableSetOf<PowerArmorModule>()
+		// The player's currently equipped modules.
 		get() {
 			// Load the player's modules from their PersistentDataContainer
 			val moduleCSV = player.persistentDataContainer.get(
@@ -52,6 +54,7 @@ class PlayerPowerArmor(val player: Player) {
 		}
 
 	var armorPower: Int
+		// The current power of the player's armor. Shared between all armor pieces.
 		get() {
 			return player.persistentDataContainer.get(
 				NamespacedKey(MinecraftStarshipPlugin.plugin, "power-armor-power"),
@@ -70,6 +73,7 @@ class PlayerPowerArmor(val player: Player) {
 		}
 
 	val moduleWeight: Int
+		// The player's total combined module weight
 		get() {
 			var weight = 0
 			modules.forEach {
@@ -80,6 +84,7 @@ class PlayerPowerArmor(val player: Player) {
 
 
 	var armorEnabled: Boolean
+		// Whether or not the player has enabled power armor in the GUI
 		get() {
 			return (player.persistentDataContainer.get(
 				NamespacedKey(MinecraftStarshipPlugin.plugin, "power-armor-enabled"),
@@ -95,10 +100,16 @@ class PlayerPowerArmor(val player: Player) {
 		}
 
 	fun addModule(module: PowerArmorModule) {
+		// Just makes it easier to add a module so you don't have to do
+		// val modules = PlayerArmor(player).modules
+		// modules.add(module)
+		// PlayerArmor(player).modules = modules
+		// Which is very verbose and generally terrible.
 		modules = (modules + module).toMutableSet()
 	}
 
 	fun removeModule(module: PowerArmorModule) {
+		// Same reason as addModule
 		module.disableModule(player)
 		modules = (modules - module).toMutableSet()
 	}

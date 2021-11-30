@@ -45,6 +45,7 @@ class ApplyPotionEffectTask(
 	private val module: EffectModule
 
 ) : BukkitRunnable() {
+	// Need to periodically re-apply the module's potion effect on the player.
 	override fun run() {
 		module.drainPower(player, module.powerDrain)
 		player.addPotionEffect(
