@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 class ModuleScreen(player: Player) : Screen() {
 	private val red = ItemStack(Material.RED_STAINED_GLASS)
 	private val green = ItemStack(Material.LIME_STAINED_GLASS)
-	private val playerManager = PlayerArmorManager(player)
+	private val playerArmor = PlayerPowerArmor(player)
 
 	init {
 		createScreen(player, InventoryType.CHEST, "Power Armor Modules")
@@ -22,13 +22,13 @@ class ModuleScreen(player: Player) : Screen() {
 		// Put instances of every module they have in the slots
 		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
 		var index = 0
-		playerManager.modules.forEach {
+		playerArmor.modules.forEach {
 			screen.setItem(slots[index], it.item)
-			playerManager.removeModule(it)
+			playerArmor.removeModule(it)
 			index++
 		}
 		// Insert the toggle button
-		updateToggleButton(playerManager.armorEnabled)
+		updateToggleButton(playerArmor.armorEnabled)
 
 		// Clear their modules, they get added back on screen close
 		// Don't just set it to empty or the modules won't disable
@@ -60,7 +60,7 @@ class ModuleScreen(player: Player) : Screen() {
 		setAll(mutableSetOf(4, 13, 22), color)
 
 		// Update the power indicator
-		val power = playerManager.armorPower
+		val power = playerArmor.armorPower
 		val item = ItemStack(
 			when {
 				power >= PowerArmorManager.maxPower -> Material.BLUE_STAINED_GLASS
@@ -94,8 +94,8 @@ class ModuleScreen(player: Player) : Screen() {
 	override fun onScreenButtonClicked(slot: Int) {
 		when (slot) {
 			8 -> {
-				playerManager.armorEnabled = !playerManager.armorEnabled
-				updateToggleButton(playerManager.armorEnabled)
+				playerArmor.armorEnabled = !playerArmor.armorEnabled
+				updateToggleButton(playerArmor.armorEnabled)
 			}
 		}
 	}
@@ -106,7 +106,7 @@ class ModuleScreen(player: Player) : Screen() {
 		slots.forEach {
 			val module = getModuleFromItemStack(screen.getItem(it))
 			if (module != null) {
-				if (!playerManager.modules.contains(module)) playerManager.addModule(module)
+				if (!playerArmor.modules.contains(module)) playerArmor.addModule(module)
 				else player.inventory.addItem(module.item)
 			} else {
 				// It's not a module but we should still give it back to them
@@ -120,9 +120,9 @@ class ModuleScreen(player: Player) : Screen() {
 			// Player added fuel to the power slot
 			if (PowerArmorManager.powerItems.containsKey(newItems.type)) {
 				for (i in 0..newItems.amount) {
-					val currentPower = playerManager.armorPower
+					val currentPower = playerArmor.armorPower
 					if (currentPower < PowerArmorManager.maxPower) {
-						playerManager.armorPower = currentPower + PowerArmorManager.powerItems[newItems.type]!!
+						playerArmor.armorPower = currentPower + PowerArmorManager.powerItems[newItems.type]!!
 						newItems.amount--
 					}
 				}

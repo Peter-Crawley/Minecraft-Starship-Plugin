@@ -1,7 +1,7 @@
 package io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules
 
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin
-import io.github.petercrawley.minecraftstarshipplugin.powerarmor.PlayerArmorManager
+import io.github.petercrawley.minecraftstarshipplugin.powerarmor.PlayerPowerArmor
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -36,12 +36,12 @@ abstract class PowerArmorModule {
 
 	fun drainPower(player: Player, powerToDrain: Int) {
 		// Drain powerToDrain power from the player, and disable if we run out
-		val playerManager = PlayerArmorManager(player)
-		if (playerManager.armorPower <= 0) {
+		val playerArmor = PlayerPowerArmor(player)
+		if (playerArmor.armorPower <= 0) {
 			// Out of power, disable the module
 			disableModule(player)
 		} else {
-			playerManager.armorPower -= powerToDrain
+			playerArmor.armorPower -= powerToDrain
 		}
 	}
 

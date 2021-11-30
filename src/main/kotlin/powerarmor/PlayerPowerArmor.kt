@@ -6,7 +6,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 
-class PlayerArmorManager(val player: Player) {
+class PlayerPowerArmor(val player: Player) {
 	// Contains all of the player-specific power armor variables.
 	// Custom getters and setters for saving/loading from PDC.
 
