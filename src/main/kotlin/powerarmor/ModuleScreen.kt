@@ -24,6 +24,7 @@ class ModuleScreen(player: Player) : Screen() {
 		var index = 0
 		playerManager.modules.forEach {
 			screen.setItem(slots[index], it.item)
+			playerManager.removeModule(it)
 			index++
 		}
 		// Insert the toggle button
@@ -31,9 +32,6 @@ class ModuleScreen(player: Player) : Screen() {
 
 		// Clear their modules, they get added back on screen close
 		// Don't just set it to empty or the modules won't disable
-		playerManager.modules.forEach {
-			playerManager.modules.remove(it)
-		}
 		updateStatus()
 	}
 
@@ -104,10 +102,17 @@ class ModuleScreen(player: Player) : Screen() {
 
 	override fun onScreenClosed() {
 		// Save every module to the player
-		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
+		val slots = playerEditableSlots
 		slots.forEach {
 			val module = getModuleFromItemStack(screen.getItem(it))
-			if (module != null) playerManager.modules.add(module)
+			if (module != null) {
+				if (!playerManager.modules.contains(module)) playerManager.addModule(module)
+				else player.inventory.addItem(module.item)
+			}
+			else {
+				// It's not a module but we should still give it back to them
+				if (screen.getItem(it) != null) player.inventory.addItem(screen.getItem(it)!!)
+			}
 		}
 	}
 
@@ -118,7 +123,7 @@ class ModuleScreen(player: Player) : Screen() {
 				for (i in 0..newItems.amount) {
 					val currentPower = playerManager.armorPower
 					if (currentPower < PowerArmorManager.maxPower) {
-						playerManager.armorPower += PowerArmorManager.powerItems[newItems.type]!!
+						playerManager.armorPower = currentPower + PowerArmorManager.powerItems[newItems.type]!!
 						newItems.amount--
 					}
 				}
