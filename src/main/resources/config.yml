@@ -278,3 +278,64 @@ defaultUndetectable:
   - WHEAT
   - WHITE_TULIP
   - WITHER_ROSE
+
+
+# The settings for power armor
+powerArmor:
+
+  # How often (in ticks) to check and update power armor module status
+  # Small values may cause lag
+  updateDelta: 20
+
+  # The maximum module weight a player can have before their modules are disabled
+  maxWeight: 4
+
+  # The maximum amount of power that can be stored
+  maxPower: 5000
+
+  # The items that can be used to add power to the armor.
+  # Format: MATERIAL_NAME: POWER_AMOUNT
+  powerItems:
+    COAL: 100
+
+  # Modules
+  modules:
+    - "Speed Module": # The module name
+
+        # The base material for the item
+        material: FLINT
+
+        # The weight. If the player's total weight is above maxWeight the modules are disabled
+        # to prevent them from using all modules at once.
+        weight: 2
+
+        recipe:
+          layout: # The layout of items in the crafting grid
+            - "ggg"
+            - "gfg"
+            - "ggg"
+          items: # The key; relates letters in the layout to materials
+            g: GOLD_INGOT
+            f: FLINT
+
+        # The type of module. Either EFFECT or (add more when added in)
+        # Effect modules apply potion effects, others have hardcoded custom features.
+        type: EFFECT
+
+        # effect field, only used with EFFECT type
+        effect:
+          # The effect to give. See https://shanebeestudios.com/docs/paper/1.9.4/org/bukkit/potion/PotionEffectType.html
+          # for a list of valid effects.
+          id: SPEED
+
+          # The effect multiplier. O is level 1, 1 is level 2, etc.
+          multiplier: 0
+
+          # How often (in ticks) to re-apply the potion. Higher values may cause lag.
+          period: 20
+
+          # The bonus duration. Useful for effects such as night vision to avoid flickering
+          durationBonus: 0
+
+          # The amount of power to drain every period ticks
+          powerDrain: 1
