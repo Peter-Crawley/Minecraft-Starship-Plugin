@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.*
+import java.util.UUID
 
 class EffectModule(
 	override val item: ItemStack,
