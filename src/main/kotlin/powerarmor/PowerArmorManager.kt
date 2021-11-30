@@ -75,7 +75,7 @@ class PowerArmorManager {
 		// TODO: Error handling for missing/bad config values
 		maxModuleWeight = plugin.config.getInt("powerArmor.maxModuleWeight")
 		maxPower = plugin.config.getInt("powerArmor.maxPower")
-		plugin.config.getConfigurationSection("powerArmor.powerItems")!!.getKeys(false).forEach{
+		plugin.config.getConfigurationSection("powerArmor.powerItems")!!.getKeys(false).forEach {
 			powerItems.putIfAbsent(Material.getMaterial(it)!!, plugin.config.getInt("powerArmor.powerItems.$it"))
 		}
 
@@ -102,7 +102,8 @@ class PowerArmorManager {
 				*plugin.config.getStringList("powerArmor.recipe.layout").toTypedArray()
 			)
 			for (craftItemKey in plugin.config.getConfigurationSection(
-				"powerArmor.recipe.items")!!.getKeys(false)) {
+				"powerArmor.recipe.items"
+			)!!.getKeys(false)) {
 				// For each key, add key, item to the recipe
 				recipe.setIngredient(
 					craftItemKey[0],
@@ -124,6 +125,7 @@ class PowerArmorManager {
 					// Effect module, load all of the stuff from the "effect" config section
 					// and create a new module
 					newModule = EffectModule(
+						ItemStack(Material.getMaterial(plugin.config.getString("powerArmor.modules.$it.item")!!)!!),
 						it,
 						plugin.config.getString("powerArmor.modules.$it.lore")!!,
 						plugin.config.getInt("powerArmor.modules.$it.weight"),
@@ -141,12 +143,14 @@ class PowerArmorManager {
 
 			// Now parse and add its recipe
 			// Maybe in the future create a function for loading recipes from config?
-			val recipe = ShapedRecipe(NamespacedKey(plugin, "power-module-${newModule.name.replace(" ", "-")}"), newModule.item)
+			val recipe =
+				ShapedRecipe(NamespacedKey(plugin, "power-module-${newModule.name.replace(" ", "-")}"), newModule.item)
 			recipe.shape(
 				*plugin.config.getStringList("powerArmor.modules.$it.recipe.layout").toTypedArray()
 			)
 			for (craftItemKey in plugin.config.getConfigurationSection(
-				"powerArmor.modules.$it.recipe.items")!!.getKeys(false)) {
+				"powerArmor.modules.$it.recipe.items"
+			)!!.getKeys(false)) {
 				// For each key, add key, item to the recipe
 				recipe.setIngredient(
 					craftItemKey[0],

@@ -4,7 +4,6 @@ import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.PlayerPowerArmor
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -12,7 +11,7 @@ import org.bukkit.persistence.PersistentDataType
 
 
 abstract class PowerArmorModule {
-	var item = ItemStack(Material.FLINT)
+	abstract val item: ItemStack
 	abstract val name: String
 	abstract val lore: String
 	abstract val weight: Int

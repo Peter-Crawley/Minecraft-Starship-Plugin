@@ -2,12 +2,23 @@ package io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules
 
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.plugin
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
-class EffectModule(override val name: String, override val lore: String, override val weight: Int, val effect: PotionEffectType, val effectMultiplier: Int, val durationBonus: Int, val powerDrain: Int, val period: Int) : PowerArmorModule() {
+class EffectModule(
+	override val item: ItemStack,
+	override val name: String,
+	override val lore: String,
+	override val weight: Int,
+	val effect: PotionEffectType,
+	val effectMultiplier: Int,
+	val durationBonus: Int,
+	val powerDrain: Int,
+	val period: Int
+) : PowerArmorModule() {
 	// Represents a power armor module that grants a potion effect to the player.
 
 	private val players = mutableMapOf<UUID, ApplyPotionEffectTask>()
