@@ -318,7 +318,7 @@ powerArmor:
             g: GOLD_INGOT
             f: FLINT
 
-        # The type of module. Either EFFECT or (add more when added in)
+        # The type of module. Either EFFECT or TODO: add more when added in
         # Effect modules apply potion effects, others have hardcoded custom features.
         type: EFFECT
 

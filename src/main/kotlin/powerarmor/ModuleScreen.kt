@@ -108,8 +108,7 @@ class ModuleScreen(player: Player) : Screen() {
 			if (module != null) {
 				if (!playerManager.modules.contains(module)) playerManager.addModule(module)
 				else player.inventory.addItem(module.item)
-			}
-			else {
+			} else {
 				// It's not a module but we should still give it back to them
 				if (screen.getItem(it) != null) player.inventory.addItem(screen.getItem(it)!!)
 			}

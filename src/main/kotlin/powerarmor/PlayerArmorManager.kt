@@ -95,6 +95,7 @@ class PlayerArmorManager(val player: Player) {
 	fun addModule(module: PowerArmorModule) {
 		modules = (modules + module).toMutableSet()
 	}
+
 	fun removeModule(module: PowerArmorModule) {
 		module.disableModule(player)
 		modules = (modules - module).toMutableSet()

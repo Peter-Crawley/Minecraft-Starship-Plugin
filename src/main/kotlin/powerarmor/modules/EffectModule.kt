@@ -44,7 +44,7 @@ class ApplyPotionEffectTask(
 		player.addPotionEffect(
 			PotionEffect(
 				module.effect,
-				module.period + module.durationBonus,
+				module.period + module.durationBonus + 1, // 1 for buffer
 				module.effectMultiplier,
 				false,
 				false

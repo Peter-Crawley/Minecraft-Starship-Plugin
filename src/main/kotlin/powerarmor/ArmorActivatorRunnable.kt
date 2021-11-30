@@ -12,7 +12,7 @@ class ArmorActivatorRunnable : BukkitRunnable() {
 		getServer().onlinePlayers.forEach { player ->
 			val playerManager = PlayerArmorManager(player)
 			player.sendMessage("\n ".repeat(20))
-			player.sendMessage("--------Power Armor Status--------")
+			player.sendMessage("--------Power Armor Status--------\n ")
 			player.sendMessage("Power: ${playerManager.armorPower} / ${PowerArmorManager.maxPower}")
 			player.sendMessage("Weight: ${playerManager.moduleWeight} / ${PowerArmorManager.maxModuleWeight}")
 			player.sendMessage("Enabled: ${playerManager.armorEnabled}")
