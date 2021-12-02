@@ -37,7 +37,7 @@ class MSPMaterial {
 				block.hasFace(BlockFace.DOWN ).toByte()
 			).toByte()
 
-			val newMaterial: Any = customBlocks[id] ?: Material.MUSHROOM_STEM
+			val newMaterial: Any = if (customBlocks.containsKey(id)) id else Material.MUSHROOM_STEM
 
 			when (newMaterial == Material.MUSHROOM_STEM) {
 				true -> {

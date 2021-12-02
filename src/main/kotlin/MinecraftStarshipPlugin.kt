@@ -5,6 +5,7 @@ import io.github.petercrawley.minecraftstarshipplugin.commands.Commands
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.CustomBlocksListener
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.MSPMaterial
 import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockConfiguration
+import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockDetectionListener
 import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockOriginRelativeLocation
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit.getPluginManager
@@ -43,6 +44,7 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 		reloadConfig()
 
 		getPluginManager().registerEvents(CustomBlocksListener(), this)
+		getPluginManager().registerEvents(MultiblockDetectionListener(), this)
 
 		plugin.getCommand("msp")!!.setExecutor(Commands())
 		plugin.getCommand("msp")!!.tabCompleter = CommandTabComplete()
