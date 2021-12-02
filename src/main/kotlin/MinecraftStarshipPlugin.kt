@@ -93,34 +93,27 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 			// Now we need to find the interface as all blocks in a multtiblock are stored relative to this point.
 			val layers = config.getConfigurationSection("multiblocks.$multiblock.layers")!!.getKeys(false)
 
-			var y: Int? = null
-			var z: Int? = null
-			var x: Int? = null
+			var interfaceY: Int? = null
+			var interfaceZ: Int? = null
+			var interfaceX: Int? = null
 
-			layerLoop@for ((iY, layer) in layers.withIndex()) {
-				val layerZList = config.getStringList("multiblocks.$multiblock.layers.$layer")
+			run layerLoop@ {
+				layers.forEachIndexed { y, yName ->
+					config.getStringList("multiblocks.$multiblock.layers.$yName").forEachIndexed { z, zString ->
+						zString.forEachIndexed { x, xChar ->
+							if (xChar == interfaceKey) {
+								interfaceY = y
+								interfaceZ = z
+								interfaceX = x
 
-				var iZ = -1
-				for (zString in layerZList) {
-					iZ++
-
-					var iX = -1
-
-					for (c in zString) {
-						iX++
-
-						if (c == interfaceKey) {
-							y = iY
-							z = iZ
-							x = iX
-
-							break@layerLoop
+								return@layerLoop
+							}
 						}
 					}
 				}
 			}
 
-			logger.info("Multiblock $multiblock has interface at $x, $y, $z")
+			logger.info("Multiblock $multiblock has interface at $interfaceX, $interfaceY, $interfaceZ")
 		}
 
 //		timeOperations = config.getBoolean("timeOperations", false)
