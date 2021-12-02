@@ -70,7 +70,7 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 			var interfaceKey: Char? = null
 
 			for (key in config.getConfigurationSection("multiblocks.$multiblock.key")!!.getKeys(false)) {
-				val materialString = config.getString("multiblocks.$multiblock.key.$key")
+				val materialString = config.getString("multiblocks.$multiblock.key.$key")!!
 
 				val material = MSPMaterial(materialString)
 
