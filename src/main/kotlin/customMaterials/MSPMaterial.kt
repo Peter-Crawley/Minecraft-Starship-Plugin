@@ -23,8 +23,10 @@ class MSPMaterial {
 	}
 
 	constructor(material: Int) {
-		this.materialType = MaterialType.CustomItem
-		this.material = material
+		throw NotImplementedError("Custom items are not yet supported")
+
+//		this.materialType = MaterialType.CustomItem
+//		this.material = material
 	}
 
 	constructor(material: String) {
@@ -43,7 +45,7 @@ class MSPMaterial {
 		return when (materialType) {
 			MaterialType.Bukkit -> material as Material
 			MaterialType.CustomBlock -> Material.MUSHROOM_STEM
-			MaterialType.CustomItem -> Material.STICK
+			MaterialType.CustomItem -> throw NotImplementedError("Custom items are not yet supported") // Material.STICK
 		}
 	}
 
@@ -62,7 +64,7 @@ class MSPMaterial {
 
 				returnValue
 			}
-			MaterialType.CustomItem -> createBlockData(Material.AIR)
+			MaterialType.CustomItem -> throw NotImplementedError("Custom items are not yet supported") // createBlockData(Material.AIR)
 		}
 	}
 
@@ -79,13 +81,15 @@ class MSPMaterial {
 				returnValue
 			}
 			MaterialType.CustomItem -> {
-				val returnValue = ItemStack(Material.STICK)
+				throw NotImplementedError("Custom items are not yet supported")
 
-				val itemMeta = returnValue.itemMeta
-				itemMeta.setCustomModelData(material as Int + 192) // Offset by 192 to avoid conflicts with custom blocks
-				returnValue.itemMeta = itemMeta
-
-				returnValue
+//				val returnValue = ItemStack(Material.STICK)
+//
+//				val itemMeta = returnValue.itemMeta
+//				itemMeta.setCustomModelData(material as Int + 192) // Offset by 192 to avoid conflicts with custom blocks
+//				returnValue.itemMeta = itemMeta
+//
+//				returnValue
 			}
 		}
 	}
