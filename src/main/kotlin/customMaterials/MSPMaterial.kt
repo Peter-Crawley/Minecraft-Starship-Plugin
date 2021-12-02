@@ -1,6 +1,8 @@
 package io.github.petercrawley.minecraftstarshipplugin.customMaterials
 
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.customBlocks
+import io.github.petercrawley.minecraftstarshipplugin.bit
+import io.github.petercrawley.minecraftstarshipplugin.toByte
 import org.bukkit.Bukkit.createBlockData
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -20,6 +22,38 @@ class MSPMaterial {
 	constructor(material: Byte) {
 		this.materialType = MaterialType.CustomBlock
 		this.material = material
+	}
+
+	constructor(material: BlockData) {
+		if (material.material == Material.MUSHROOM_STEM) {
+			val block = material as MultipleFacing
+
+			val id: Byte = (
+				block.hasFace(BlockFace.NORTH).toByte() * 32 +
+				block.hasFace(BlockFace.EAST ).toByte() * 16 +
+				block.hasFace(BlockFace.SOUTH).toByte() *  8 +
+				block.hasFace(BlockFace.WEST ).toByte() *  4 +
+				block.hasFace(BlockFace.UP   ).toByte() *  2 +
+				block.hasFace(BlockFace.DOWN ).toByte()
+			).toByte()
+
+			val newMaterial: Any = customBlocks[id] ?: Material.MUSHROOM_STEM
+
+			when (newMaterial == Material.MUSHROOM_STEM) {
+				true -> {
+					this.materialType = MaterialType.Bukkit
+					this.material = Material.MUSHROOM_STEM
+				}
+				false -> {
+					this.materialType = MaterialType.CustomBlock
+					this.material = newMaterial
+				}
+			}
+
+		} else {
+			this.materialType = MaterialType.Bukkit
+			this.material = material
+		}
 	}
 
 	constructor(material: Int) {
@@ -55,12 +89,12 @@ class MSPMaterial {
 			MaterialType.CustomBlock -> {
 				val returnValue = createBlockData(Material.MUSHROOM_STEM) as MultipleFacing
 
-				returnValue.setFace(BlockFace.NORTH, bitOfByte(material as Byte, 5))
-				returnValue.setFace(BlockFace.EAST,  bitOfByte(material as Byte, 4))
-				returnValue.setFace(BlockFace.SOUTH, bitOfByte(material as Byte, 3))
-				returnValue.setFace(BlockFace.WEST,  bitOfByte(material as Byte, 2))
-				returnValue.setFace(BlockFace.UP,    bitOfByte(material as Byte, 1))
-				returnValue.setFace(BlockFace.DOWN,  bitOfByte(material as Byte, 0))
+				returnValue.setFace(BlockFace.NORTH, (material as Byte).bit(5))
+				returnValue.setFace(BlockFace.EAST,  (material as Byte).bit(4))
+				returnValue.setFace(BlockFace.SOUTH, (material as Byte).bit(3))
+				returnValue.setFace(BlockFace.WEST,  (material as Byte).bit(2))
+				returnValue.setFace(BlockFace.UP,    (material as Byte).bit(1))
+				returnValue.setFace(BlockFace.DOWN,  (material as Byte).bit(0))
 
 				returnValue
 			}
