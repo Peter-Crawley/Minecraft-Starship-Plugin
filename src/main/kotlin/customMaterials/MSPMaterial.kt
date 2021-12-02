@@ -109,4 +109,12 @@ class MSPMaterial {
 	override fun hashCode(): Int {
 		return 31 * materialType.hashCode() + material.hashCode()
 	}
+
+	override fun toString(): String {
+		return when(materialType) {
+			MaterialType.Bukkit -> material.toString()
+			MaterialType.CustomBlock -> customBlocks[material as Byte]!!
+			MaterialType.CustomItem -> throw NotImplementedError("Custom items are not yet supported")
+		}
+	}
 }
