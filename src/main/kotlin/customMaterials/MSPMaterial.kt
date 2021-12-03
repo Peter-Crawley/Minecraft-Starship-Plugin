@@ -4,6 +4,7 @@ import io.github.petercrawley.minecraftstarshipplugin.bit
 import io.github.petercrawley.minecraftstarshipplugin.toByte
 import org.bukkit.Bukkit.createBlockData
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
@@ -32,12 +33,12 @@ class MSPMaterial {
 			val block = material as MultipleFacing
 
 			val id: Byte = (
-				block.hasFace(BlockFace.NORTH).toByte() * 32 +
-				block.hasFace(BlockFace.EAST ).toByte() * 16 +
-				block.hasFace(BlockFace.SOUTH).toByte() *  8 +
-				block.hasFace(BlockFace.WEST ).toByte() *  4 +
-				block.hasFace(BlockFace.UP   ).toByte() *  2 +
-				block.hasFace(BlockFace.DOWN ).toByte()
+				if (block.hasFace(BlockFace.NORTH)) 32 else 0 +
+				if (block.hasFace(BlockFace.EAST )) 16 else 0 +
+				if (block.hasFace(BlockFace.SOUTH))  8 else 0 +
+				if (block.hasFace(BlockFace.WEST ))  4 else 0 +
+				if (block.hasFace(BlockFace.UP   ))  2 else 0 +
+				if (block.hasFace(BlockFace.DOWN ))  1 else 0
 			).toByte()
 
 			val newMaterial: Any = if (customBlocks.containsKey(id)) id else Material.MUSHROOM_STEM
@@ -55,9 +56,11 @@ class MSPMaterial {
 
 		} else {
 			this.materialType = MaterialType.Bukkit
-			this.material = material
+			this.material = material.material
 		}
 	}
+
+	constructor(material: Block) : this(material.blockData)
 
 	constructor(material: Int) {
 		throw NotImplementedError("Custom items are not yet supported")
@@ -137,14 +140,13 @@ class MSPMaterial {
 
 		other as MSPMaterial
 
-		if (materialType != other.materialType) return false
 		if (material != other.material) return false
 
 		return true
 	}
 
 	override fun hashCode(): Int {
-		return 31 * materialType.hashCode() + material.hashCode()
+		return material.hashCode()
 	}
 
 	override fun toString(): String {
