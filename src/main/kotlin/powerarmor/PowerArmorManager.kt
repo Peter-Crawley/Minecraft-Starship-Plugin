@@ -1,6 +1,7 @@
 package io.github.petercrawley.minecraftstarshipplugin.powerarmor
 
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.plugin
+import io.github.petercrawley.minecraftstarshipplugin.events.MSPConfigReloadEvent
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.EffectModule
 import io.github.petercrawley.minecraftstarshipplugin.powerarmor.modules.PowerArmorModule
 import net.kyori.adventure.text.Component
@@ -8,13 +9,17 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffectType
 
-class PowerArmorManager {
+class PowerArmorManager: Listener {
 	// Utility functions for dealing with power armor
 	// + create power armor itself
 
@@ -65,12 +70,61 @@ class PowerArmorManager {
 		}
 	}
 
-	private val chestplate = ItemStack(Material.LEATHER_CHESTPLATE)
-	private val leggings = ItemStack(Material.LEATHER_LEGGINGS)
-	private val boots = ItemStack(Material.LEATHER_BOOTS)
-	private val helmet = ItemStack(Material.LEATHER_HELMET)
+	private var chestplate = ItemStack(Material.LEATHER_CHESTPLATE)
+	private var leggings = ItemStack(Material.LEATHER_LEGGINGS)
+	private var boots = ItemStack(Material.LEATHER_BOOTS)
+	private var helmet = ItemStack(Material.LEATHER_HELMET)
+
+	private lateinit var runnable: ArmorActivatorRunnable
 
 	init {
+		plugin.server.pluginManager.registerEvents(this, plugin)
+		onConfigReload()
+	}
+
+
+	@EventHandler
+	fun onPlayerInteractEvent(event: PlayerInteractEvent) {
+		// Bring up the power armor menu
+		if (isPowerArmor(event.item)) {
+			ModuleScreen(event.player)
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onPlayerDeath(event: PlayerDeathEvent) {
+		// Drop the player's current power armor modules, if keepInventory is off
+		if (event.keepInventory) return
+		val playerArmor = PlayerPowerArmor(event.entity)
+		playerArmor.modules.forEach {
+			event.entity.world.dropItem(event.entity.location, it.item)
+		}
+		playerArmor.modules = mutableSetOf<PowerArmorModule>()
+		// Remove armor power
+		playerArmor.armorPower = 0
+	}
+	@EventHandler
+	fun onConfigReload(event: MSPConfigReloadEvent) {
+		onConfigReload()
+	}
+
+	fun onConfigReload() {
+		// Reset everything
+		powerArmorModules.forEach {
+			// Unregister the old recipes
+			plugin.server.removeRecipe(NamespacedKey(plugin, "power-module-${it.name.replace(" ", "-")}"))
+		}
+		powerArmorModules = mutableSetOf() // clear the modules
+		powerItems = mutableMapOf() // clear the power items
+		if (this::runnable.isInitialized) runnable.cancel() // cancel the runnable, the interval might have changed
+
+		// Clear the armor itself
+		chestplate = ItemStack(Material.LEATHER_CHESTPLATE)
+		leggings = ItemStack(Material.LEATHER_LEGGINGS)
+		boots = ItemStack(Material.LEATHER_BOOTS)
+		helmet = ItemStack(Material.LEATHER_HELMET)
+
 		// Get some values from the config
 		// TODO: Error handling for missing/bad config values
 		maxModuleWeight = plugin.config.getInt("powerArmor.maxModuleWeight")
@@ -79,12 +133,11 @@ class PowerArmorManager {
 			powerItems.putIfAbsent(Material.getMaterial(it)!!, plugin.config.getInt("powerArmor.powerItems.$it"))
 		}
 
-
-
 		mutableSetOf(helmet, chestplate, leggings, boots).forEach {
 			val meta = it.itemMeta as LeatherArmorMeta
 			val lore: MutableList<Component> = ArrayList()
-			lore.add(Component.text("Modules can be added to a full set", NamedTextColor.DARK_GREEN))
+			// TODO: get armor lore from config
+			lore.add(Component.text(plugin.config.getString("powerArmor.lore")!!, NamedTextColor.DARK_GREEN))
 			meta.lore(lore)
 
 			// I'm not going to say I like this logic, but it works.
@@ -97,6 +150,8 @@ class PowerArmorManager {
 
 			// Get the recipe from the config
 			// Maybe we can avoid doing this for every single armor piece?
+			// Remove the old recipe if it exists
+			plugin.server.removeRecipe(NamespacedKey(plugin, "power-$type"))
 			val recipe = ShapedRecipe(NamespacedKey(plugin, "power-$type"), it)
 			recipe.shape(
 				*plugin.config.getStringList("powerArmor.recipe.layout").toTypedArray()

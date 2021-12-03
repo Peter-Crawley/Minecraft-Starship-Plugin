@@ -5,6 +5,7 @@ import io.github.petercrawley.minecraftstarshipplugin.commands.Commands
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.CustomBlocksListener
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.MSPMaterial
 import io.github.petercrawley.minecraftstarshipplugin.events.MSPConfigReloadEvent
+import io.github.petercrawley.minecraftstarshipplugin.powerarmor.PowerArmorManager
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.plugin.java.JavaPlugin
@@ -32,6 +33,7 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 		Metrics(this, 12863)
 
 		getPluginManager().registerEvents(CustomBlocksListener(), this)
+		PowerArmorManager()
 
 		//   /-\
 		//  / ! \  MUST BE CALLED AFTER REGISTERING EVENTS!
