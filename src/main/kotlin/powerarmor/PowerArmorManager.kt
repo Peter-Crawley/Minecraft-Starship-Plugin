@@ -196,6 +196,8 @@ class PowerArmorManager: Listener {
 
 			// Now parse and add its recipe
 			// Maybe in the future create a function for loading recipes from config?
+			// Unregister any possible pre-existing recipe
+			plugin.server.removeRecipe(NamespacedKey(plugin, "power-module-${newModule.name.replace(" ", "-")}"))
 			val recipe =
 				ShapedRecipe(NamespacedKey(plugin, "power-module-${newModule.name.replace(" ", "-")}"), newModule.item)
 			recipe.shape(
