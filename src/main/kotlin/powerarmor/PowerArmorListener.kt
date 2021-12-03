@@ -25,5 +25,7 @@ class PowerArmorListener : Listener {
 			event.entity.world.dropItem(event.entity.location, it.item)
 		}
 		playerArmor.modules = mutableSetOf<PowerArmorModule>()
+		// Remove armor power
+		playerArmor.armorPower = 0
 	}
 }
