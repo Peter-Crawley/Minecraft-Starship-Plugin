@@ -19,7 +19,6 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 //
 //		var detectionLimit: Int = 500000
 //			private set
-//
 //		var forcedUndetectable = setOf<MSPMaterial>()
 //			private set
 //
