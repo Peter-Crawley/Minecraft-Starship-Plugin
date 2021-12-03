@@ -283,6 +283,9 @@ defaultUndetectable:
 # The settings for power armor
 powerArmor:
 
+  # The lore for the items themselves
+  lore: "Modules can be added to a complete set"
+
   # The recipe for the power armor pieces themselves
   recipe:
     layout:
