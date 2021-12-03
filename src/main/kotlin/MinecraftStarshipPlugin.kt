@@ -4,7 +4,7 @@ import io.github.petercrawley.minecraftstarshipplugin.commands.CommandTabComplet
 import io.github.petercrawley.minecraftstarshipplugin.commands.Commands
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.CustomBlocksListener
 import io.github.petercrawley.minecraftstarshipplugin.events.MSPConfigReloadEvent
-import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockDetectionListener
+import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockListener
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.plugin.java.JavaPlugin
@@ -32,7 +32,7 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 		Metrics(this, 12863)
 
 		getPluginManager().registerEvents(CustomBlocksListener(), this)
-		getPluginManager().registerEvents(MultiblockDetectionListener(), this)
+		getPluginManager().registerEvents(MultiblockListener(), this)
 
 		//   /-\
 		//  / ! \  MUST BE CALLED AFTER REGISTERING EVENTS!
