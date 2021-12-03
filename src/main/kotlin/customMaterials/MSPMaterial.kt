@@ -1,6 +1,7 @@
 package io.github.petercrawley.minecraftstarshipplugin.customMaterials
 
-import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.customBlocks
+import io.github.petercrawley.minecraftstarshipplugin.bit
+import io.github.petercrawley.minecraftstarshipplugin.toByte
 import org.bukkit.Bukkit.createBlockData
 import org.bukkit.Material
 import org.bukkit.block.BlockFace

@@ -1,6 +1,5 @@
 package io.github.petercrawley.minecraftstarshipplugin.customMaterials
 
-import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin
 import io.github.petercrawley.minecraftstarshipplugin.MinecraftStarshipPlugin.Companion.plugin
 import io.github.petercrawley.minecraftstarshipplugin.events.MSPConfigReloadEvent
 import org.bukkit.Bukkit.*
