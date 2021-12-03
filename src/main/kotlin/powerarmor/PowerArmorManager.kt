@@ -39,14 +39,6 @@ class PowerArmorManager: Listener {
 			) != null
 		}
 
-		fun isPowerModule(module: ItemStack?): Boolean {
-			if (module == null) return false
-			return module.itemMeta.persistentDataContainer.get(
-				NamespacedKey(plugin, "power-module-name"),
-				PersistentDataType.STRING
-			) != null
-		}
-
 		fun getModuleFromItemStack(item: ItemStack?): PowerArmorModule? {
 			if (item == null) return null
 			return getModuleFromName(
