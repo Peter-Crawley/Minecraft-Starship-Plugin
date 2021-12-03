@@ -26,7 +26,6 @@ class PowerArmorManager: Listener {
 	companion object {
 		var powerArmorModules = mutableSetOf<PowerArmorModule>()
 
-
 		// These are all overwritten by the config on init
 		var maxPower = 1 // The max power a set can store
 		var maxModuleWeight = 1
@@ -136,7 +135,6 @@ class PowerArmorManager: Listener {
 		mutableSetOf(helmet, chestplate, leggings, boots).forEach {
 			val meta = it.itemMeta as LeatherArmorMeta
 			val lore: MutableList<Component> = ArrayList()
-			// TODO: get armor lore from config
 			lore.add(Component.text(plugin.config.getString("powerArmor.lore")!!, NamedTextColor.DARK_GREEN))
 			meta.lore(lore)
 
@@ -180,7 +178,7 @@ class PowerArmorManager: Listener {
 					// Effect module, load all the stuff from the "effect" config section
 					// and create a new module
 					newModule = EffectModule(
-						ItemStack(Material.getMaterial(plugin.config.getString("powerArmor.modules.$it.item")!!)!!),
+						ItemStack(Material.getMaterial(plugin.config.getString("powerArmor.modules.$it.material")!!)!!),
 						it,
 						plugin.config.getString("powerArmor.modules.$it.lore")!!,
 						plugin.config.getInt("powerArmor.modules.$it.weight"),
