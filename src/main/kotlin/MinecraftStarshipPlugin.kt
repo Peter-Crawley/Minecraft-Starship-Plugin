@@ -4,9 +4,6 @@ import io.github.petercrawley.minecraftstarshipplugin.commands.CommandTabComplet
 import io.github.petercrawley.minecraftstarshipplugin.commands.Commands
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.CustomBlocksListener
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.MSPMaterial
-import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockConfiguration
-import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockDetectionListener
-import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockOriginRelativeLocation
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.plugin.java.JavaPlugin
@@ -14,9 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin
 class MinecraftStarshipPlugin : JavaPlugin() {
 	companion object {
 		lateinit var plugin: MinecraftStarshipPlugin
-			private set
-
-		var customBlocks = mapOf<Byte, String>()
 			private set
 
 		var multiblocks = setOf<MultiblockConfiguration>()
@@ -53,22 +47,7 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 	override fun reloadConfig() {
 		super.reloadConfig()
 
-		// Load custom blocks
-		val newCustomBlocks = mutableMapOf<Byte, String>()
-		config.getConfigurationSection("customBlocks")?.getKeys(false)?.forEach {
-			var id = 0
-
-			id += if (config.getBoolean("customBlocks.$it.north")) 32 else 0
-			id += if (config.getBoolean("customBlocks.$it.east"))  16 else 0
-			id += if (config.getBoolean("customBlocks.$it.south"))  8 else 0
-			id += if (config.getBoolean("customBlocks.$it.west"))   4 else 0
-			id += if (config.getBoolean("customBlocks.$it.up"))     2 else 0
-			id += if (config.getBoolean("customBlocks.$it.down"))   1 else 0
-
-			newCustomBlocks[id.toByte()] = it.uppercase()
-		}
-
-		customBlocks = newCustomBlocks
+		getPluginManager().callEvent(MSPConfigReloadEvent())
 
 		val newMultiblocks = mutableSetOf<MultiblockConfiguration>()
 		config.getConfigurationSection("multiblocks")?.getKeys(false)?.forEach multiblockLoop@{ multiblock ->
