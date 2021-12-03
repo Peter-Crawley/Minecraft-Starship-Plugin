@@ -3,11 +3,8 @@ package io.github.petercrawley.minecraftstarshipplugin
 import io.github.petercrawley.minecraftstarshipplugin.commands.CommandTabComplete
 import io.github.petercrawley.minecraftstarshipplugin.commands.Commands
 import io.github.petercrawley.minecraftstarshipplugin.customMaterials.CustomBlocksListener
-import io.github.petercrawley.minecraftstarshipplugin.customMaterials.MSPMaterial
 import io.github.petercrawley.minecraftstarshipplugin.events.MSPConfigReloadEvent
-import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockConfiguration
 import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockDetectionListener
-import io.github.petercrawley.minecraftstarshipplugin.multiblocks.MultiblockOriginRelativeLocation
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.plugin.java.JavaPlugin
@@ -15,9 +12,6 @@ import org.bukkit.plugin.java.JavaPlugin
 class MinecraftStarshipPlugin : JavaPlugin() {
 	companion object {
 		lateinit var plugin: MinecraftStarshipPlugin
-			private set
-
-		var multiblocks = setOf<MultiblockConfiguration>()
 			private set
 
 //		var timeOperations: Boolean = false
@@ -52,86 +46,6 @@ class MinecraftStarshipPlugin : JavaPlugin() {
 		super.reloadConfig()
 
 		getPluginManager().callEvent(MSPConfigReloadEvent())
-
-		val newMultiblocks = mutableSetOf<MultiblockConfiguration>()
-		config.getConfigurationSection("multiblocks")?.getKeys(false)?.forEach multiblockLoop@{ multiblock ->
-			// The first thing that needs to be done is we need to get all the keys for the multiblock
-			// This way we know what blocks are in the multiblock
-			val keys = mutableMapOf<String, MSPMaterial>()
-			var interfaceKey: Char? = null
-
-			config.getConfigurationSection("multiblocks.$multiblock.key")!!.getKeys(false).forEach {
-				val materialString = config.getString("multiblocks.$multiblock.key.$it")!!
-
-				val material = MSPMaterial(materialString)
-
-				if (keys.containsValue(material)) {
-					logger.severe("Multiblock $multiblock contains duplicate material $materialString")
-					return@multiblockLoop
-				}
-
-				// TODO: Interface should be determined by a config file.
-				if (materialString == "INTERFACE") interfaceKey = it[0]
-
-				keys[it] = material
-			}
-
-			if (interfaceKey == null) {
-				logger.severe("Multiblock $multiblock does not have an interface block")
-				return@multiblockLoop
-			}
-
-			// Now we need to find the interface as all blocks in a multtiblock are stored relative to this point.
-			val layers = config.getConfigurationSection("multiblocks.$multiblock.layers")!!.getKeys(false)
-
-			var interfaceY: Int? = null
-			var interfaceZ: Int? = null
-			var interfaceX: Int? = null
-
-			run layerLoop@ {
-				layers.forEachIndexed { y, yName ->
-					config.getStringList("multiblocks.$multiblock.layers.$yName").forEachIndexed { z, zString ->
-						zString.forEachIndexed { x, xChar ->
-							if (xChar == interfaceKey) {
-								interfaceY = y
-								interfaceZ = z
-								interfaceX = x
-
-								return@layerLoop
-							}
-						}
-					}
-				}
-			}
-
-			// Create a MultiblockConfiguration
-			val multiblockConfiguration = MultiblockConfiguration(multiblock)
-
-			// Now we need to get all the blocks relative to the origin (interface)
-			layers.forEachIndexed { y, yName ->
-				config.getStringList("multiblocks.$multiblock.layers.$yName").forEachIndexed { z, zString ->
-					zString.forEachIndexed { x, xChar ->
-						// Find relative position
-						val relativeY = y - interfaceY!!
-						val relativeZ = z - interfaceZ!!
-						val relativeX = x - interfaceX!!
-
-						// Get the material from keys
-						val material = keys[xChar.toString()]
-
-						// Construct a MultiblockOriginRelativeLocation
-						val location = MultiblockOriginRelativeLocation(relativeX, relativeY, relativeZ)
-
-						// Add the block to the multiblock configuration
-						multiblockConfiguration.blocks[location] = material!!
-					}
-				}
-			}
-
-			newMultiblocks.add(multiblockConfiguration)
-		}
-
-		multiblocks = newMultiblocks
 
 //		timeOperations = config.getBoolean("timeOperations", false)
 //		detectionLimit = config.getInt("detectionLimit", 500000)
