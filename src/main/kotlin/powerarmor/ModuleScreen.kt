@@ -99,14 +99,15 @@ class ModuleScreen(player: Player) : Screen() {
 	override fun onScreenClosed() {
 		// Save every module to the player, and return other items to their inventory
 		playerEditableSlots.forEach {
-			val module = getModuleFromItemStack(screen.getItem(it))
+			val item = screen.getItem(it)
+			val module = getModuleFromItemStack(item)
 			if (module != null) {
-				if (!playerArmor.modules.contains(module)) playerArmor.addModule(module)
-				else player.inventory.addItem(module.item)
-			} else {
-				// It's not a module but we should still give it back to them
-				if (screen.getItem(it) != null) player.inventory.addItem(screen.getItem(it)!!)
+				if (!playerArmor.modules.contains(module)) {
+					playerArmor.addModule(module)
+					item!!.amount--
+				}
 			}
+			if (item != null) player.inventory.addItem(item)
 		}
 	}
 
