@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffectType
 
-class PowerArmorManager: Listener {
+class PowerArmorManager : Listener {
 	// Utility functions for dealing with power armor
 	// + create power armor itself
 
@@ -70,97 +70,47 @@ class PowerArmorManager: Listener {
 
 	init {
 		plugin.server.pluginManager.registerEvents(this, plugin)
-		onConfigReload()
+		reloadPowerArmor()
 	}
 
+	fun loadRecipe(key: NamespacedKey, item: ItemStack, path: String, items: Map<Char, Material> = mapOf()) {
+		// Load and register the recipe in the config at path
+		// Items represents any characters that have a predefined item
+		// Recipe format:
+		// <path> :
+		// 		layout:
+		// 			- "ccc"
+		// 			- "ccc"
+		// 			- "ccc"
+		// 		items:
+		//			c: SEA_PICKLE
 
-	@EventHandler
-	fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-		// Bring up the power armor menu
-		if (isPowerArmor(event.item)) {
-			ModuleScreen(event.player)
-			event.isCancelled = true
-		}
-	}
+		// If an old recipe exists with this key, remove it
+		plugin.server.removeRecipe(key)
 
-	@EventHandler
-	fun onPlayerDeath(event: PlayerDeathEvent) {
-		// Drop the player's current power armor modules, if keepInventory is off
-		if (event.keepInventory) return
-		val playerArmor = PlayerPowerArmor(event.entity)
-		playerArmor.modules.forEach {
-			event.entity.world.dropItem(event.entity.location, it.item)
-		}
-		playerArmor.modules = mutableSetOf<PowerArmorModule>()
-		// Remove armor power
-		playerArmor.armorPower = 0
-	}
-	@EventHandler
-	fun onConfigReload(event: MSPConfigReloadEvent) {
-		onConfigReload()
-	}
-
-	fun onConfigReload() {
-		// Reset everything
-		powerArmorModules.forEach {
-			// Unregister the old recipes
-			plugin.server.removeRecipe(NamespacedKey(plugin, "power-module-${it.name.replace(" ", "-")}"))
-		}
-		powerArmorModules = mutableSetOf() // clear the modules
-		powerItems = mutableMapOf() // clear the power items
-		if (this::runnable.isInitialized) runnable.cancel() // cancel the runnable, the interval might have changed
-
-		// Clear the armor itself
-		chestplate = ItemStack(Material.LEATHER_CHESTPLATE)
-		leggings = ItemStack(Material.LEATHER_LEGGINGS)
-		boots = ItemStack(Material.LEATHER_BOOTS)
-		helmet = ItemStack(Material.LEATHER_HELMET)
-
-		// Get some values from the config
-		// TODO: Error handling for missing/bad config values
-		maxModuleWeight = plugin.config.getInt("powerArmor.maxModuleWeight")
-		maxPower = plugin.config.getInt("powerArmor.maxPower")
-		plugin.config.getConfigurationSection("powerArmor.powerItems")!!.getKeys(false).forEach {
-			powerItems.putIfAbsent(Material.getMaterial(it)!!, plugin.config.getInt("powerArmor.powerItems.$it"))
-		}
-
-		mutableSetOf(helmet, chestplate, leggings, boots).forEach {
-			val meta = it.itemMeta as LeatherArmorMeta
-			val lore: MutableList<Component> = ArrayList()
-			lore.add(Component.text(plugin.config.getString("powerArmor.lore")!!, NamedTextColor.DARK_GREEN))
-			meta.lore(lore)
-
-			// I'm not going to say I like this logic, but it works.
-			// This bothers me, I really, really want to use capitalize()
-			val type = it.type.toString().split("_")[1].lowercase().replaceFirstChar { char -> char.titlecase() }
-			meta.displayName(Component.text("Power $type", NamedTextColor.GOLD))
-
-			meta.persistentDataContainer.set(NamespacedKey(plugin, "is-power-armor"), PersistentDataType.INTEGER, 1)
-			it.itemMeta = meta
-
-			// Get the recipe from the config
-			// Maybe we can avoid doing this for every single armor piece?
-			// Remove the old recipe if it exists
-			plugin.server.removeRecipe(NamespacedKey(plugin, "power-$type"))
-			val recipe = ShapedRecipe(NamespacedKey(plugin, "power-$type"), it)
-			recipe.shape(
-				*plugin.config.getStringList("powerArmor.recipe.layout").toTypedArray()
+		val recipe = ShapedRecipe(key, item)
+		recipe.shape(
+			*plugin.config.getStringList("$path.layout").toTypedArray()
+		)
+		for (craftItemKey in plugin.config.getConfigurationSection(
+			"$path.items"
+		)!!.getKeys(false)) {
+			// For each key, add key, item to the recipe
+			recipe.setIngredient(
+				craftItemKey[0],
+				Material.getMaterial(plugin.config.getString("$path.items.$craftItemKey")!!)!!
 			)
-			for (craftItemKey in plugin.config.getConfigurationSection(
-				"powerArmor.recipe.items"
-			)!!.getKeys(false)) {
-				// For each key, add key, item to the recipe
-				recipe.setIngredient(
-					craftItemKey[0],
-					Material.getMaterial(plugin.config.getString("powerArmor.recipe.items.$craftItemKey")!!)!!
-				)
-			}
-
-			recipe.setIngredient('a', it.type)
-			Bukkit.addRecipe(recipe)
 		}
+		items.forEach { (c, m) ->
+			recipe.setIngredient(c, m)
+		}
+		Bukkit.addRecipe(recipe)
+	}
 
+	fun loadModules() {
 		// Now that we have the actual power armor items created, load the modules from the config
+		powerArmorModules = mutableSetOf() // clear the modules
+
 		plugin.config.getConfigurationSection("powerArmor.modules")!!.getKeys(false).forEach {
 			// First, determine whether its a hardcoded module or an effect module
 			val type = plugin.config.getString("powerArmor.modules.$it.type")!!
@@ -185,30 +135,86 @@ class PowerArmorManager: Listener {
 			}
 
 			newModule.createItem()
-
-			// Now parse and add its recipe
-			// Maybe in the future create a function for loading recipes from config?
-			// Unregister any possible pre-existing recipe
-			plugin.server.removeRecipe(NamespacedKey(plugin, "power-module-${newModule.name.replace(" ", "-")}"))
-			val recipe =
-				ShapedRecipe(NamespacedKey(plugin, "power-module-${newModule.name.replace(" ", "-")}"), newModule.item)
-			recipe.shape(
-				*plugin.config.getStringList("powerArmor.modules.$it.recipe.layout").toTypedArray()
+			loadRecipe(
+				NamespacedKey(plugin, "power-module-${newModule.name.replace(" ", "-")}"),
+				newModule.item,
+				"powerArmor.modules.$it.recipe"
 			)
-			for (craftItemKey in plugin.config.getConfigurationSection(
-				"powerArmor.modules.$it.recipe.items"
-			)!!.getKeys(false)) {
-				// For each key, add key, item to the recipe
-				recipe.setIngredient(
-					craftItemKey[0],
-					Material.getMaterial(plugin.config.getString("powerArmor.modules.$it.recipe.items.$craftItemKey")!!)!!
-				)
-			}
-			Bukkit.addRecipe(recipe)
-			powerArmorModules.add(newModule)
+
 		}
+	}
+
+
+
+	fun loadArmor() {
+		// Reset the armor itself
+		chestplate = ItemStack(Material.LEATHER_CHESTPLATE)
+		leggings = ItemStack(Material.LEATHER_LEGGINGS)
+		boots = ItemStack(Material.LEATHER_BOOTS)
+		helmet = ItemStack(Material.LEATHER_HELMET)
+
+		mutableSetOf(helmet, chestplate, leggings, boots).forEach {
+			val meta = it.itemMeta as LeatherArmorMeta
+			val lore: MutableList<Component> = ArrayList()
+			lore.add(Component.text(plugin.config.getString("powerArmor.lore")!!, NamedTextColor.DARK_GREEN))
+			meta.lore(lore)
+
+			// I'm not going to say I like this logic, but it works.
+			// This bothers me, I really, really want to use capitalize()
+			val type = it.type.toString().split("_")[1].lowercase().replaceFirstChar { char -> char.titlecase() }
+			meta.displayName(Component.text("Power $type", NamedTextColor.GOLD))
+
+			meta.persistentDataContainer.set(NamespacedKey(plugin, "is-power-armor"), PersistentDataType.INTEGER, 1)
+			it.itemMeta = meta
+			loadRecipe(NamespacedKey(plugin, "power-$type"), it, "powerArmor.recipe", mutableMapOf("a"[0] to it.type))
+		}
+	}
+
+
+	fun reloadPowerArmor() {
+		// Reset everything and load it from the config
+		powerItems = mutableMapOf() // clear the power items
+		if (this::runnable.isInitialized) runnable.cancel() // cancel the runnable, the interval might have changed
+
+		// Load some base values
+		maxModuleWeight = plugin.config.getInt("powerArmor.maxModuleWeight")
+		maxPower = plugin.config.getInt("powerArmor.maxPower")
+		plugin.config.getConfigurationSection("powerArmor.powerItems")!!.getKeys(false).forEach {
+			powerItems.putIfAbsent(Material.getMaterial(it)!!, plugin.config.getInt("powerArmor.powerItems.$it"))
+		}
+
+		loadArmor()
+		loadModules()
 
 		// Check once per interval defined in config for players wearing power armor
 		ArmorActivatorRunnable().runTaskTimer(plugin, 5, plugin.config.getLong("powerArmor.updateInterval"))
+	}
+
+
+	@EventHandler
+	fun onPlayerInteractEvent(event: PlayerInteractEvent) {
+		// Bring up the power armor menu
+		if (isPowerArmor(event.item)) {
+			ModuleScreen(event.player)
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onPlayerDeath(event: PlayerDeathEvent) {
+		// Drop the player's current power armor modules, if keepInventory is off
+		if (event.keepInventory) return
+		val playerArmor = PlayerPowerArmor(event.entity)
+		playerArmor.modules.forEach {
+			event.entity.world.dropItem(event.entity.location, it.item)
+		}
+		playerArmor.modules = mutableSetOf<PowerArmorModule>()
+		// Remove armor power
+		playerArmor.armorPower = 0
+	}
+
+	@EventHandler
+	fun onConfigReload(event: MSPConfigReloadEvent) {
+		reloadPowerArmor()
 	}
 }
