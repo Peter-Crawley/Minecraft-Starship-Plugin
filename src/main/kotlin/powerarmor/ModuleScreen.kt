@@ -89,19 +89,16 @@ class ModuleScreen(player: Player) : Screen() {
 	}
 
 	override fun onScreenButtonClicked(slot: Int) {
-		when (slot) {
-			8 -> {
-				// Handle clicks on the toggle button
-				playerArmor.armorEnabled = !playerArmor.armorEnabled
-				updateStatus()
-			}
+		if (slot == 8) {
+			// Handle clicks on the toggle button
+			playerArmor.armorEnabled = !playerArmor.armorEnabled
+			updateStatus()
 		}
 	}
 
 	override fun onScreenClosed() {
 		// Save every module to the player, and return other items to their inventory
-		val slots = playerEditableSlots
-		slots.forEach {
+		playerEditableSlots.forEach {
 			val module = getModuleFromItemStack(screen.getItem(it))
 			if (module != null) {
 				if (!playerArmor.modules.contains(module)) playerArmor.addModule(module)
@@ -114,15 +111,13 @@ class ModuleScreen(player: Player) : Screen() {
 	}
 
 	override fun onPlayerChangeItem(slot: Int, oldItems: ItemStack?, newItems: ItemStack?) {
-		if (slot == 26 && newItems != null) {
-			// Player added an item (maybe fuel) to the power input slot
-			if (PowerArmorManager.powerItems.containsKey(newItems.type)) {
-				for (i in 0..newItems.amount) {
-					val currentPower = playerArmor.armorPower
-					if (currentPower < PowerArmorManager.maxPower) {
-						playerArmor.armorPower = currentPower + PowerArmorManager.powerItems[newItems.type]!!
-						newItems.amount--
-					}
+		if (slot == 26 && newItems != null && PowerArmorManager.powerItems.containsKey(newItems.type)) {
+			// Player added fuel to the power input slot
+			for (i in 0..newItems.amount) {
+				val currentPower = playerArmor.armorPower
+				if (currentPower < PowerArmorManager.maxPower) {
+					playerArmor.armorPower = currentPower + PowerArmorManager.powerItems[newItems.type]!!
+					newItems.amount--
 				}
 			}
 		}

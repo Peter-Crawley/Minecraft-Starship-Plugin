@@ -21,7 +21,7 @@ import org.bukkit.potion.PotionEffectType
 
 class PowerArmorManager : Listener {
 	// Utility functions for dealing with power armor
-	// + create power armor itself
+	// + create power armor itself from the config file
 
 	companion object {
 		var powerArmorModules = mutableSetOf<PowerArmorModule>()
@@ -73,7 +73,7 @@ class PowerArmorManager : Listener {
 		reloadPowerArmor()
 	}
 
-	fun loadRecipe(key: NamespacedKey, item: ItemStack, path: String, items: Map<Char, Material> = mapOf()) {
+	private fun loadRecipe(key: NamespacedKey, item: ItemStack, path: String, items: Map<Char, Material> = mapOf()) {
 		// Load and register the recipe in the config at path
 		// Items represents any characters that have a predefined item
 		// Recipe format:
@@ -108,7 +108,7 @@ class PowerArmorManager : Listener {
 	}
 
 	private fun loadModules() {
-		// Now that we have the actual power armor items created, load the modules from the config
+		// Load the modules from the config
 		powerArmorModules = mutableSetOf() // clear the modules
 
 		plugin.config.getConfigurationSection("powerArmor.modules")!!.getKeys(false).forEach {
@@ -149,7 +149,7 @@ class PowerArmorManager : Listener {
 
 
 	private fun loadArmor() {
-		// Reset the armor itself
+		// Reset the armor, and load it from the config
 		chestplate = ItemStack(Material.LEATHER_CHESTPLATE)
 		leggings = ItemStack(Material.LEATHER_LEGGINGS)
 		boots = ItemStack(Material.LEATHER_BOOTS)
@@ -163,18 +163,23 @@ class PowerArmorManager : Listener {
 
 			// I'm not going to say I like this logic, but it works.
 			// This bothers me, I really, really want to use capitalize()
-			val type = it.type.toString().split("_")[1].lowercase().replaceFirstChar { char -> char.titlecase() }
-			meta.displayName(Component.text("Power $type", NamedTextColor.GOLD))
+			val typeName = it.type.toString().split("_")[1].lowercase().replaceFirstChar { char -> char.titlecase() }
+			meta.displayName(Component.text("Power $typeName", NamedTextColor.GOLD))
 
 			meta.persistentDataContainer.set(NamespacedKey(plugin, "is-power-armor"), PersistentDataType.INTEGER, 1)
 			it.itemMeta = meta
-			loadRecipe(NamespacedKey(plugin, "power-$type"), it, "powerArmor.recipe", mutableMapOf("a"[0] to it.type))
+			loadRecipe(
+				NamespacedKey(plugin, "power-$typeName"),
+				it,
+				"powerArmor.recipe",
+				mutableMapOf("a"[0] to it.type)
+			)
 		}
 	}
 
 
 	private fun reloadPowerArmor() {
-		// Reset everything and load it from the config
+		// Reset everything and load it from the config again
 		powerItems = mutableMapOf() // clear the power items
 		if (this::runnable.isInitialized) runnable.cancel() // cancel the runnable, the interval might have changed
 
