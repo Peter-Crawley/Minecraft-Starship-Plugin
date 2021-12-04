@@ -315,10 +315,10 @@ powerArmor:
   modules:
     "Speed Module": # The module name
       # The item lore
-      lore: "Grants speed when applied"
+      lore: "Grants Speed 1 when applied"
 
       # The base material for the item
-      material: FLINT
+      material: SUGAR
 
       # The weight. If the player's total weight is above maxWeight the modules are disabled
       # to prevent them from using all modules at once.
@@ -326,11 +326,12 @@ powerArmor:
 
       recipe:
         layout: # The layout of items in the crafting grid
-          - "ggg"
           - "gfg"
-          - "ggg"
+          - "fsf"
+          - "gfg"
         items: # The key; relates letters in the layout to materials
           g: GOLD_INGOT
+          s: SUGAR
           f: FLINT
 
       # The type of module. Either EFFECT or TODO: add more when added in
@@ -354,3 +355,25 @@ powerArmor:
 
         # The amount of power to drain every period ticks
         powerDrain: 1
+
+
+    "Jump Module":
+        lore: "Grants Jump Boost 2 when applied"
+        material: RABBIT_FOOT
+        weight: 2
+        recipe:
+          layout:
+            - "gfg"
+            - "frf"
+            - "gfg"
+          items:
+            g: GOLD_INGOT
+            r: RABBIT_FOOT
+            f: FLINT
+        type: EFFECT
+        effect:
+          id: JUMP
+          multiplier: 1
+          period: 20
+          durationBonus: 0
+          powerDrain: 1
