@@ -148,7 +148,6 @@ class PowerArmorManager : Listener {
 	}
 
 
-
 	private fun loadArmor() {
 		// Reset the armor itself
 		chestplate = ItemStack(Material.LEATHER_CHESTPLATE)

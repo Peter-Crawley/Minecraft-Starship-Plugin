@@ -12,13 +12,9 @@ class ArmorActivatorRunnable : BukkitRunnable() {
 		getServer().onlinePlayers.forEach { player ->
 			val playerManager = PlayerPowerArmor(player)
 			if (playerManager.wearingPowerArmor && playerManager.armorEnabled && playerManager.armorPower > 0 && playerManager.moduleWeight <= PowerArmorManager.maxModuleWeight) {
-				playerManager.modules.forEach { module ->
-					module.enableModule(player)
-				}
+				playerManager.modules.forEach { module -> module.enableModule(player) }
 			} else {
-				playerManager.modules.forEach { module ->
-					module.disableModule(player)
-				}
+				playerManager.modules.forEach { module -> module.disableModule(player) }
 			}
 		}
 	}

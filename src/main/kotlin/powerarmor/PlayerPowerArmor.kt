@@ -84,7 +84,7 @@ class PlayerPowerArmor(val player: Player) {
 
 
 	var armorEnabled: Boolean
-		// Whether or not the player has enabled power armor in the GUI
+		// Whether the player has enabled power armor in the GUI
 		get() {
 			return (player.persistentDataContainer.get(
 				NamespacedKey(MinecraftStarshipPlugin.plugin, "power-armor-enabled"),
@@ -100,7 +100,7 @@ class PlayerPowerArmor(val player: Player) {
 		}
 
 	fun addModule(module: PowerArmorModule) {
-		// Just makes it easier to add a module so you don't have to do
+		// Just makes it easier to add a module, so you don't have to do
 		// val modules = PlayerArmor(player).modules
 		// modules.add(module)
 		// PlayerArmor(player).modules = modules
