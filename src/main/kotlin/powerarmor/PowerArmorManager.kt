@@ -61,10 +61,10 @@ class PowerArmorManager : Listener {
 		}
 	}
 
-	private var chestplate = ItemStack(Material.LEATHER_CHESTPLATE)
-	private var leggings = ItemStack(Material.LEATHER_LEGGINGS)
-	private var boots = ItemStack(Material.LEATHER_BOOTS)
-	private var helmet = ItemStack(Material.LEATHER_HELMET)
+	private lateinit var chestplate: ItemStack
+	private lateinit var leggings: ItemStack
+	private lateinit var boots: ItemStack
+	private lateinit var helmet: ItemStack
 
 	private lateinit var runnable: ArmorActivatorRunnable
 
