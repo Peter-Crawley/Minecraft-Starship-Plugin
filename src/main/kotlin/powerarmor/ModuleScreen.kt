@@ -22,21 +22,20 @@ class ModuleScreen(player: Player) : Screen() {
 		// Put instances of every module they have in the slots
 		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
 		var index = 0
+
+		// Clear their modules, they get added back on screen close
+		// Don't just set their modules to empty or the modules won't disable
 		playerArmor.modules.forEach {
 			screen.setItem(slots[index], it.item)
 			playerArmor.removeModule(it)
 			index++
 		}
-		// Insert the toggle button
-		updateToggleButton(playerArmor.armorEnabled)
-
-		// Clear their modules, they get added back on screen close
-		// Don't just set it to empty or the modules won't disable
+		// Insert the toggle button, the fuel indicator, and the weight indicators
 		updateStatus()
 	}
 
 	private fun updateStatus() {
-		// Update the colored status bar in the middle, that tells the weight status
+		// Update the colored status bar that tells the player's module weight.
 		// Since we temporarily removed all of their modules, we can't use PlayerPowerArmor.moduleWeight
 		val slots = arrayOf(0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21)
 		var weight = 0
@@ -59,6 +58,14 @@ class ModuleScreen(player: Player) : Screen() {
 		// Set it
 		setAll(mutableSetOf(4, 13, 22), color)
 
+		// Update the color and name of the toggle button in the top left of the GUI
+		var button = ItemStack(Material.RED_STAINED_GLASS)
+		if (playerArmor.armorEnabled) button = ItemStack(Material.LIME_STAINED_GLASS)
+		val buttonMeta = button.itemMeta
+		buttonMeta.displayName(Component.text(if (playerArmor.armorEnabled) "Enabled" else "Disabled"))
+		button.itemMeta = buttonMeta
+		screen.setItem(8, button)
+
 		// Update the power indicator
 		val power = playerArmor.armorPower
 		val item = ItemStack(
@@ -77,17 +84,6 @@ class ModuleScreen(player: Player) : Screen() {
 		screen.setItem(17, item)
 	}
 
-
-	fun updateToggleButton(enabled: Boolean) {
-		// Update the color and name of the toggle button in the top left of the GUI
-		var item = ItemStack(Material.RED_STAINED_GLASS)
-		if (enabled) item = ItemStack(Material.LIME_STAINED_GLASS)
-		val meta = item.itemMeta
-		meta.displayName(Component.text(if (enabled) "Enabled" else "Disabled"))
-		item.itemMeta = meta
-		screen.setItem(8, item)
-	}
-
 	override fun onScreenUpdate() {
 		updateStatus()
 	}
@@ -97,7 +93,7 @@ class ModuleScreen(player: Player) : Screen() {
 			8 -> {
 				// Handle clicks on the toggle button
 				playerArmor.armorEnabled = !playerArmor.armorEnabled
-				updateToggleButton(playerArmor.armorEnabled)
+				updateStatus()
 			}
 		}
 	}
