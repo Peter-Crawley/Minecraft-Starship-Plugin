@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.meta.LeatherArmorMeta
@@ -223,5 +224,12 @@ class PowerArmorManager : Listener {
 	@EventHandler
 	fun onConfigReload(event: MSPConfigReloadEvent) {
 		reloadPowerArmor()
+	}
+
+	@EventHandler
+	fun onPlayerDisconnect(event: PlayerQuitEvent) {
+		// Shouldn't be needed, but just in case
+		// Doesn't hurt anything to have it.
+		PlayerPowerArmor(event.player).modules.forEach { it.disableModule(event.player) }
 	}
 }
