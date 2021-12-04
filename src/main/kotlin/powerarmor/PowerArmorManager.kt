@@ -107,7 +107,7 @@ class PowerArmorManager : Listener {
 		Bukkit.addRecipe(recipe)
 	}
 
-	fun loadModules() {
+	private fun loadModules() {
 		// Now that we have the actual power armor items created, load the modules from the config
 		powerArmorModules = mutableSetOf() // clear the modules
 
@@ -140,13 +140,13 @@ class PowerArmorManager : Listener {
 				newModule.item,
 				"powerArmor.modules.$it.recipe"
 			)
-
+			powerArmorModules.add(newModule)
 		}
 	}
 
 
 
-	fun loadArmor() {
+	private fun loadArmor() {
 		// Reset the armor itself
 		chestplate = ItemStack(Material.LEATHER_CHESTPLATE)
 		leggings = ItemStack(Material.LEATHER_LEGGINGS)
@@ -171,7 +171,7 @@ class PowerArmorManager : Listener {
 	}
 
 
-	fun reloadPowerArmor() {
+	private fun reloadPowerArmor() {
 		// Reset everything and load it from the config
 		powerItems = mutableMapOf() // clear the power items
 		if (this::runnable.isInitialized) runnable.cancel() // cancel the runnable, the interval might have changed
