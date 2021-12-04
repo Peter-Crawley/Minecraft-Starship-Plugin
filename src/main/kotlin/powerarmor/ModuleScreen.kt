@@ -9,8 +9,8 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemStack
 
 class ModuleScreen(player: Player) : Screen() {
-	private val red = ItemStack(Material.RED_STAINED_GLASS)
-	private val green = ItemStack(Material.LIME_STAINED_GLASS)
+	private val red = ItemStack(Material.RED_STAINED_GLASS_PANE)
+	private val green = ItemStack(Material.LIME_STAINED_GLASS_PANE)
 	private val playerArmor = PlayerPowerArmor(player)
 
 	init {
@@ -44,13 +44,7 @@ class ModuleScreen(player: Player) : Screen() {
 			if (module != null) weight += module.weight
 		}
 		// Figure out what color to make the status bar
-		val color = ItemStack(
-			if (weight <= PowerArmorManager.maxModuleWeight) {
-				green
-			} else {
-				red
-			}
-		)
+		val color = ItemStack(if (weight <= PowerArmorManager.maxModuleWeight) { green } else { red })
 		// Name it
 		val colorMeta = color.itemMeta
 		colorMeta.displayName(Component.text("Weight: ${weight} / ${PowerArmorManager.maxModuleWeight}"))
@@ -70,12 +64,12 @@ class ModuleScreen(player: Player) : Screen() {
 		val power = playerArmor.armorPower
 		val item = ItemStack(
 			when {
-				power >= PowerArmorManager.maxPower -> Material.BLUE_STAINED_GLASS
-				power >= (PowerArmorManager.maxPower / 4) * 3 -> Material.GREEN_STAINED_GLASS
-				power >= PowerArmorManager.maxPower / 2 -> Material.LIME_STAINED_GLASS
-				power >= PowerArmorManager.maxPower / 4 -> Material.YELLOW_STAINED_GLASS
-				power > 0 -> Material.ORANGE_STAINED_GLASS
-				else -> Material.RED_STAINED_GLASS
+				power >= PowerArmorManager.maxPower -> Material.BLUE_STAINED_GLASS_PANE
+				power >= (PowerArmorManager.maxPower / 4) * 3 -> Material.GREEN_STAINED_GLASS_PANE
+				power >= PowerArmorManager.maxPower / 2 -> Material.LIME_STAINED_GLASS_PANE
+				power >= PowerArmorManager.maxPower / 4 -> Material.YELLOW_STAINED_GLASS_PANE
+				power > 0 -> Material.ORANGE_STAINED_GLASS_PANE
+				else -> Material.RED_STAINED_GLASS_PANE
 			}
 		)
 		val meta = item.itemMeta
