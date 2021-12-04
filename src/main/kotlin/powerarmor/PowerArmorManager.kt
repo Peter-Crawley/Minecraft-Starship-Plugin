@@ -131,7 +131,10 @@ class PowerArmorManager : Listener {
 						plugin.config.getInt("powerArmor.modules.$it.effect.period")
 					)
 				}
-				else -> return@forEach // no specified type, move on.
+				else -> {
+					plugin.logger.warning("Unknown module type: $type")
+					return@forEach // no specified type, move on.
+				}
 			}
 
 			newModule.createItem()
